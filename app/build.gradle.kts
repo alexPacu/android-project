@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.lab5"
+    namespace = "com.example.progr3ss"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.lab5"
+        applicationId = "com.example.progr3ss"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -61,4 +61,7 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.fragment.ktx)
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
 }

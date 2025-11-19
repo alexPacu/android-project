@@ -9,11 +9,14 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import com.example.progr3ss.model.AuthResponse
 import com.example.progr3ss.repository.AuthRepository
+import com.example.progr3ss.utils.SessionManager
 import retrofit2.Response
 
-class AuthViewModel(application: Application) :
+@Deprecated("Use AuthViewModel instead")
+class LoginLegacyViewModel(application: Application) :
     AndroidViewModel(application) {
     private val repository = AuthRepository(application)
+    private val sessionManager = SessionManager(application.applicationContext)
     private val _authResult = MutableLiveData<Result<AuthResponse>>()
     val authResult: LiveData<Result<AuthResponse>> = _authResult
     fun login(email: String, password: String) {
@@ -28,7 +31,11 @@ class AuthViewModel(application: Application) :
     }
     private fun handleResponse(response: Response<AuthResponse>) {
         if (response.isSuccessful && response.body() != null) {
-            _authResult.postValue(Result.success(response.body()!!))
+            val body = response.body()!!
+            // Persist tokens for future auto-login
+            sessionManager.saveAuthToken(body.tokens.accessToken)
+            sessionManager.saveRefreshToken(body.tokens.refreshToken)
+            _authResult.postValue(Result.success(body))
         } else {
             _authResult.postValue(Result.failure(Exception("Auth failed:${response.code()}")))
         }
