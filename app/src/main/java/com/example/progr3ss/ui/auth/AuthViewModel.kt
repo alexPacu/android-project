@@ -1,6 +1,7 @@
 package com.example.progr3ss.ui.auth
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -28,6 +29,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 val response = repository.login(email, password)
                 handleAuthResponse(response)
             } catch (e: Exception) {
+                Log.e("AuthViewModel", "Login error", e)
                 _authResult.postValue(Result.failure(e))
             }
         }
@@ -39,6 +41,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 val response = repository.googleLogin(idToken)
                 handleAuthResponse(response)
             } catch (e: Exception) {
+                Log.e("AuthViewModel", "Google login error", e)
                 _authResult.postValue(Result.failure(e))
             }
         }
@@ -51,9 +54,23 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 if (response.isSuccessful && response.body() != null) {
                     _resetResult.postValue(Result.success(response.body()!!))
                 } else {
-                    _resetResult.postValue(Result.failure(Exception("Reset failed: ${'$'}{response.code()}")))
+                    val errorBody = try {
+                        response.errorBody()?.string()
+                    } catch (_: Exception) {
+                        null
+                    }
+                    val msg = buildString {
+                        append("Reset failed: ")
+                        append(response.code())
+                        if (!errorBody.isNullOrBlank()) {
+                            append(" - ")
+                            append(errorBody)
+                        }
+                    }
+                    _resetResult.postValue(Result.failure(Exception(msg)))
                 }
             } catch (e: Exception) {
+                Log.e("AuthViewModel", "Reset password error", e)
                 _resetResult.postValue(Result.failure(e))
             }
         }
@@ -62,12 +79,26 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     private fun handleAuthResponse(response: Response<AuthResponse>) {
         if (response.isSuccessful && response.body() != null) {
             val body = response.body()!!
+            Log.d("AuthViewModel", "Saving tokens: accessToken present=${body.tokens.accessToken.isNotEmpty()}, refreshToken present=${body.tokens.refreshToken.isNotEmpty()}")
             sessionManager.saveAuthToken(body.tokens.accessToken)
             sessionManager.saveRefreshToken(body.tokens.refreshToken)
             _authResult.postValue(Result.success(body))
         } else {
-            _authResult.postValue(Result.failure(Exception("Auth failed: ${'$'}{response.code()}")))
+            val errorBody = try {
+                response.errorBody()?.string()
+            } catch (_: Exception) {
+                null
+            }
+            val msg = buildString {
+                append("Auth failed: ")
+                append(response.code())
+                if (!errorBody.isNullOrBlank()) {
+                    append(" - ")
+                    append(errorBody)
+                }
+            }
+            Log.w("AuthViewModel", msg)
+            _authResult.postValue(Result.failure(Exception(msg)))
         }
     }
 }
-

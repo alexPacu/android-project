@@ -3,6 +3,7 @@ package com.example.progr3ss.network
 import com.example.progr3ss.model.AuthRequest
 import com.example.progr3ss.model.AuthResponse
 import com.example.progr3ss.model.MessageResponse
+import com.example.progr3ss.model.RefreshTokenResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -13,7 +14,7 @@ interface AuthApiService {
     suspend fun login(@Body request: AuthRequest): Response<AuthResponse>
 
     @POST("auth/local/refresh")
-    suspend fun refresh(@Header("Authorization") refreshToken: String): Response<AuthResponse>
+    suspend fun refresh(@Header("Authorization") refreshToken: String): Response<RefreshTokenResponse>
 
     @Multipart
     @POST("auth/local/signup")

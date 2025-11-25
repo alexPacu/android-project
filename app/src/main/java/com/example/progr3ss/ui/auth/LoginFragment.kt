@@ -20,6 +20,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 
+
 class LoginFragment : Fragment() {
 
     private var _binding: FragmentLoginBinding? = null
@@ -63,7 +64,6 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         initGoogle()
         return binding.root
@@ -95,19 +95,17 @@ class LoginFragment : Fragment() {
         viewModel.authResult.observe(viewLifecycleOwner) { result ->
             Log.d("LoginFragment", "authResult: $result")
             result.onSuccess { authResponse ->
-                // Handle successful login (e.g., navigate to home screen)
-                Toast.makeText(requireContext(), "Welcome${authResponse.user.name}", Toast.LENGTH_LONG).show()
+                val displayName = authResponse.user.profile.username
+                Toast.makeText(requireContext(), "Welcome $displayName", Toast.LENGTH_LONG).show()
                 val session = SessionManager(requireContext().applicationContext)
                 session.saveAuthToken(authResponse.tokens.accessToken)
                 findNavController().navigate(R.id.action_loginFragment_to_homeFragment) }.onFailure { error ->
-                // Handle login failure
                 Toast.makeText(requireContext(), "Login failed:${error.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
     override fun onDestroyView() {
         super.onDestroyView()
-        // Avoid memory leaks
         _binding = null
     }
 }

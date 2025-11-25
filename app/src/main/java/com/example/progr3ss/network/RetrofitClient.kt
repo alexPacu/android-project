@@ -7,10 +7,9 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
-    // Backend is available at localhost:8080/api on the host; from emulator use 10.0.2.2
-    private const val BASE_URL = "http://10.0.2.2:8080/api/"
+    private const val BASE_URL = "http://10.0.2.2:8080/"
 
-    fun getInstance(context: Context): AuthApiService {
+    private fun getRetrofitInstance(context: Context): Retrofit {
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val client = OkHttpClient.Builder()
             .addInterceptor(AuthInterceptor(context.applicationContext))
@@ -21,6 +20,13 @@ object RetrofitClient {
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(AuthApiService::class.java)
+    }
+
+    fun getInstance(context: Context): AuthApiService {
+        return getRetrofitInstance(context).create(AuthApiService::class.java)
+    }
+
+    fun getScheduleApiService(context: Context): ScheduleApiService {
+        return getRetrofitInstance(context).create(ScheduleApiService::class.java)
     }
 }

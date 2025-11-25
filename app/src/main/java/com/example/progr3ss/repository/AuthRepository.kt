@@ -13,7 +13,7 @@ class AuthRepository(context: Context) {
     suspend fun login(email: String, password: String) =
         api.login(AuthRequest(email = email, password = password))
 
-    suspend fun refreshTokens(refreshToken: String) =
+    suspend fun refreshTokens(refreshToken: String): retrofit2.Response<com.example.progr3ss.model.RefreshTokenResponse> =
         api.refresh("Bearer $refreshToken")
 
     suspend fun register(username: String, email: String, password: String) =

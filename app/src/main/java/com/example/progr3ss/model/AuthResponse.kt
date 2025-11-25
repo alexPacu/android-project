@@ -1,8 +1,23 @@
 package com.example.progr3ss.model
-data class User(
-    val id: String,
+
+data class Profile(
+    val id: Int,
     val email: String,
-    val name: String
+    val username: String,
+    val description: String?,
+    val profileImageUrl: String?,
+    val coverImageUrl: String?,
+    val fcmToken: String?,
+    val preferences: Any?,
+    val created_at: String,
+    val updated_at: String
+)
+
+data class User(
+    val id: Int,
+    val email: String,
+    val auth_provider: String,
+    val profile: Profile
 )
 
 data class Tokens(
@@ -10,7 +25,13 @@ data class Tokens(
     val refreshToken: String
 )
 
-public final data class AuthResponse(
-    public final val tokens: Tokens,
-    public final val user: User
+data class AuthResponse(
+    val message: String,
+    val user: User,
+    val tokens: Tokens
+)
+
+data class RefreshTokenResponse(
+    val accessToken: String,
+    val refreshToken: String
 )

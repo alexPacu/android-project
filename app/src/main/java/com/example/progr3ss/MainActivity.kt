@@ -15,7 +15,6 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set up toolbar as ActionBar for NavigationUI
         findViewById<MaterialToolbar>(R.id.topAppBar)?.let { toolbar ->
             setSupportActionBar(toolbar)
         }
@@ -23,20 +22,25 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager
             .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
+
+        val autoLoginSuccess = intent.getBooleanExtra("AUTO_LOGIN_SUCCESS", false)
+        android.util.Log.d("MainActivity", "AUTO_LOGIN_SUCCESS=$autoLoginSuccess")
+
+        val navInflater = navController.navInflater
+        val graph = navInflater.inflate(R.navigation.nav_graph)
+        graph.setStartDestination(if (autoLoginSuccess) {
+            R.id.homeFragment
+        } else {
+            R.id.loginFragment
+        })
+        navController.graph = graph
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(R.id.profileFragment, R.id.registerFragment, R.id.loginFragment, R.id.homeFragment)
         )
-        // Only configure ActionBar if present
-        if (supportActionBar != null) {
+        supportActionBar?.let {
             setupActionBarWithNavController(navController, appBarConfiguration)
         }
         binding.bottomNav.setupWithNavController(navController)
-
-        val autoLoginSuccess = intent.getBooleanExtra("AUTO_LOGIN_SUCCESS", false)
-        if (autoLoginSuccess) {
-            if (navController.currentDestination?.id == R.id.loginFragment) {
-                navController.navigate(R.id.homeFragment)
-            }
-        }
     }
 }
