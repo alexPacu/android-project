@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.progr3ss.R
 import com.example.progr3ss.databinding.FragmentHomeBinding
@@ -45,23 +46,33 @@ class HomeFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.schedules.observe(viewLifecycleOwner) { schedules ->
+            android.util.Log.d("HomeFragment", "===========================================")
+            android.util.Log.d("HomeFragment", "📱 UI UPDATE - Schedules LiveData changed")
+            android.util.Log.d("HomeFragment", "Received ${schedules.size} schedules in Fragment")
+
             scheduleAdapter.submitList(schedules)
+            android.util.Log.d("HomeFragment", "Submitted ${schedules.size} schedules to adapter")
 
             if (schedules.isEmpty()) {
+                android.util.Log.d("HomeFragment", "Showing empty state")
                 binding.emptyState.visibility = View.VISIBLE
                 binding.recyclerViewSchedules.visibility = View.GONE
             } else {
+                android.util.Log.d("HomeFragment", "Showing RecyclerView with schedules")
                 binding.emptyState.visibility = View.GONE
                 binding.recyclerViewSchedules.visibility = View.VISIBLE
             }
+            android.util.Log.d("HomeFragment", "===========================================")
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
+            android.util.Log.d("HomeFragment", "Loading state: $isLoading")
             binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
             if (!error.isNullOrEmpty()) {
+                android.util.Log.e("HomeFragment", "Error message: $error")
                 Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
             }
         }
@@ -69,13 +80,13 @@ class HomeFragment : Fragment() {
 
     private fun setupFab() {
         binding.fabAddSchedule.setOnClickListener {
-            Toast.makeText(requireContext(), "Add Schedule - Coming Soon", Toast.LENGTH_SHORT).show()
-            // findNavController().navigate(R.id.action_homeFragment_to_addScheduleFragment)
+            findNavController().navigate(R.id.action_homeFragment_to_addScheduleFragment)
         }
     }
 
     override fun onResume() {
         super.onResume()
+        android.util.Log.d("HomeFragment", "onResume - Loading today's schedules")
         viewModel.loadTodaySchedules()
     }
 }

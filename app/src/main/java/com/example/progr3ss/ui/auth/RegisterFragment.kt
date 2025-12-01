@@ -121,10 +121,9 @@ class RegisterFragment : Fragment() {
         viewModel.registerResult.observe(viewLifecycleOwner) { result ->
             result.onSuccess {
                 Toast.makeText(requireContext(), "Registration successful", Toast.LENGTH_LONG).show()
-                // Navigate to Home
-                findNavController().navigate(R.id.homeFragment)
+                findNavController().navigate(R.id.action_registerFragment_to_homeFragment)
             }.onFailure { error ->
-                Toast.makeText(requireContext(), "Registration failed: ${'$'}{error.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(requireContext(), "Registration failed: ${error.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

@@ -33,4 +33,37 @@
     <string name="already_have_account_login">Already have an account? Login</string>
     <string name="reset_password">Reset Password</string>
     <string name="send_reset_email">Send Reset Email</string>
+
+    <!-- Schedule Strings -->
+    <string name="habit_name">Habit Name</string>
+    <string name="please_select_habit">Please select a habit</string>
+    <string name="time">Time</string>
+    <string name="repeat">Repeat</string>
+    <string name="every_day">Every day</string>
+    <string name="weekdays">Weekdays</string>
+    <string name="weekends">Weekends</string>
+    <string name="custom">Custom</string>
+    <string name="goal">Goal</string>
+    <string name="amount">Amount</string>
+    <string name="select_unit">Select unit</string>
+    <string name="partner_optional">Partner(Optional)</string>
+    <string name="choose_partner">Choose partner</string>
+    <string name="reminders">Reminders</string>
+    <string name="reminders_description">Get notifications to stay on track</string>
+    <string name="cancel">Cancel</string>
+    <string name="create">Create</string>
+    <string name="create_schedule">Create Schedule</string>
+    <string name="type_or_select_habit">Type or select habit name</string>
+    <string name="select_days">Select Days</string>
+    <string name="monday">Mon</string>
+    <string name="tuesday">Tue</string>
+    <string name="wednesday">Wed</string>
+    <string name="thursday">Thu</string>
+    <string name="friday">Fri</string>
+    <string name="saturday">Sat</string>
+    <string name="sunday">Sun</string>
+    <string name="create_new_habit">Create New Habit</string>
+    <string name="description_optional">Description (Optional)</string>
+    <string name="category">Category</string>
+    <string name="goal_optional">Goal (Optional)</string>
 </resources>

@@ -36,11 +36,18 @@ class MainActivity : AppCompatActivity() {
         navController.graph = graph
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.profileFragment, R.id.registerFragment, R.id.loginFragment, R.id.homeFragment)
+            setOf(R.id.loginFragment, R.id.homeFragment)
         )
         supportActionBar?.let {
             setupActionBarWithNavController(navController, appBarConfiguration)
         }
         binding.bottomNav.setupWithNavController(navController)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        return navController.navigateUp() || super.onSupportNavigateUp()
     }
 }
