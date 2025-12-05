@@ -14,6 +14,7 @@ import com.example.progr3ss.model.ScheduleStatus
 class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>() {
 
     private var schedules: List<ScheduleResponseDto> = emptyList()
+    var onItemClick: ((ScheduleResponseDto) -> Unit)? = null
 
     fun submitList(newSchedules: List<ScheduleResponseDto>) {
         schedules = newSchedules
@@ -27,7 +28,9 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>
     }
 
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
-        holder.bind(schedules[position])
+        val item = schedules[position]
+        holder.bind(item)
+        holder.itemView.setOnClickListener { onItemClick?.invoke(item) }
     }
 
     override fun getItemCount(): Int {
@@ -90,4 +93,3 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>
         }
     }
 }
-

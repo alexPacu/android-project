@@ -10,9 +10,21 @@ interface ScheduleApiService {
         @Query("date") date: String? = null
     ): Response<List<ScheduleResponseDto>>
 
+    @GET("schedule/{id}")
+    suspend fun getScheduleById(@Path("id") id: Int): Response<ScheduleResponseDto>
+
+    @PATCH("schedule/{id}")
+    suspend fun updateSchedule(
+        @Path("id") id: Int,
+        @Body body: UpdateScheduleRequest
+    ): Response<ScheduleResponseDto>
+
     // Habit endpoints
     @GET("habit")
     suspend fun getHabits(): Response<List<HabitResponseDto>>
+
+    @GET("habit/user/{userId}")
+    suspend fun getHabitsByUser(@Path("userId") userId: Int): Response<List<HabitResponseDto>>
 
     @POST("habit")
     suspend fun createHabit(
@@ -36,5 +48,9 @@ interface ScheduleApiService {
     suspend fun createWeekdayRecurringSchedule(
         @Body request: CreateWeekdayRecurringScheduleRequest
     ): Response<List<ScheduleResponseDto>>
-}
 
+    @POST("progress")
+    suspend fun createProgress(
+        @Body request: CreateProgressRequest
+    ): Response<ProgressResponseDto>
+}

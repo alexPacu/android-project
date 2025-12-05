@@ -2,6 +2,7 @@ package com.example.progr3ss
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -35,12 +36,19 @@ class MainActivity : AppCompatActivity() {
         navController.graph = graph
 
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.loginFragment, R.id.homeFragment)
+            setOf(R.id.homeFragment, R.id.profileFragment)
         )
         supportActionBar?.let {
             setupActionBarWithNavController(navController, appBarConfiguration)
         }
         binding.bottomNav.setupWithNavController(navController)
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            val isAuthScreen = destination.id == R.id.loginFragment ||
+                    destination.id == R.id.registerFragment ||
+                    destination.id == R.id.resetPasswordFragment
+            binding.bottomNav.isVisible = !isAuthScreen
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

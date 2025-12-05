@@ -1,24 +1,98 @@
 package com.example.progr3ss.ui.profile
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.progr3ss.R
-
+import com.example.progr3ss.databinding.FragmentProfileBinding
 
 class ProfileFragment : Fragment() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
-    }
+    private lateinit var binding: FragmentProfileBinding
+    private val viewModel: ProfileViewModel by viewModels()
+    private val habitAdapter = HabitProgressAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false)
+    ): View {
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_profile,
+            container,
+            false
+        )
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.rvHabits.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvHabits.adapter = habitAdapter
+
+        binding.btnAddHabit.setOnClickListener {
+            findNavController().navigate(R.id.addScheduleFragment)
+        }
+
+        binding.btnLogout.setOnClickListener {
+            showLogoutConfirmation()
+        }
+
+        binding.btnEditProfile.setOnClickListener {
+            Toast.makeText(requireContext(), "Edit profile coming soon", Toast.LENGTH_SHORT).show()
+        }
+
+        observeViewModel()
+        viewModel.loadProfile()
+    }
+
+    private fun observeViewModel() {
+        viewModel.profile.observe(viewLifecycleOwner) { profile ->
+            profile?.let {
+                binding.tvUsername.text = it.username
+                binding.tvEmail.text = it.email
+            }
+        }
+
+        viewModel.habits.observe(viewLifecycleOwner) { habits ->
+            if (habits.isNullOrEmpty()) {
+                binding.tvNoHabits.visibility = View.VISIBLE
+                binding.rvHabits.visibility = View.GONE
+            } else {
+                binding.tvNoHabits.visibility = View.GONE
+                binding.rvHabits.visibility = View.VISIBLE
+                habitAdapter.submitList(habits)
+            }
+        }
+
+        viewModel.error.observe(viewLifecycleOwner) { error ->
+            error?.let { Toast.makeText(requireContext(), it, Toast.LENGTH_LONG).show() }
+        }
+
+        viewModel.logoutSuccess.observe(viewLifecycleOwner) { success ->
+            if (success) {
+                findNavController().navigate(R.id.loginFragment)
+            }
+        }
+    }
+
+    private fun showLogoutConfirmation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Logout")
+            .setMessage("Are you sure you want to logout?")
+            .setPositiveButton("Logout") { _, _ ->
+                viewModel.logout()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 }

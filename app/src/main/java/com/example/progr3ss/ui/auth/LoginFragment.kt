@@ -86,7 +86,7 @@ class LoginFragment : Fragment() {
                 googleSignInLauncher.launch(intent)
             }
         }
-        binding.tvGoToRegister.setOnClickListener {
+        binding.btnTabRegister.setOnClickListener {
             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
         binding.tvForgotPassword.setOnClickListener {

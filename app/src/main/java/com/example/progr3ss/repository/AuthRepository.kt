@@ -30,6 +30,10 @@ class AuthRepository(context: Context) {
     suspend fun googleLogin(idToken: String) = api.googleAuth(mapOf("idToken" to idToken))
     suspend fun resetPassword(email: String) = api.resetPassword(mapOf("email" to email))
 
+    suspend fun getProfile() = api.getProfile()
+
+    suspend fun logout() = api.logout()
+
     private fun String.toRequestBody(): RequestBody =
         this.toRequestBody("text/plain".toMediaType())
 }

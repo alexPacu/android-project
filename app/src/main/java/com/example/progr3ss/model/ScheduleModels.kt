@@ -146,3 +146,45 @@ data class CreateWeekdayRecurringScheduleRequest(
     val notes: String? = null
 )
 
+data class CreateProgressRequest(
+    @SerializedName("scheduleId")
+    val scheduleId: Int,
+    val date: String,
+    @SerializedName("logged_time")
+    val loggedTime: Int? = null,
+    val notes: String? = null,
+    @SerializedName("is_completed")
+    val isCompleted: Boolean? = null
+)
+
+data class ProgressResponseDto(
+    val id: Int,
+    @SerializedName("scheduleId")
+    val scheduleId: Int,
+    val date: String,
+    @SerializedName("logged_time")
+    val loggedTime: Int?,
+    val notes: String?,
+    @SerializedName("is_completed")
+    val isCompleted: Boolean,
+    @SerializedName("created_at")
+    val createdAt: String?,
+    @SerializedName("updated_at")
+    val updatedAt: String?
+)
+
+data class UpdateScheduleRequest(
+    @SerializedName("start_time")
+    val startTime: String? = null,
+    @SerializedName("end_time")
+    val endTime: String? = null,
+    @SerializedName("duration_minutes")
+    val durationMinutes: Int? = null,
+    val status: String? = null,
+    val date: String? = null,
+    @SerializedName("is_custom")
+    val isCustom: Boolean? = null,
+    @SerializedName("participantIds")
+    val participantIds: List<Int>? = null,
+    val notes: String? = null
+)

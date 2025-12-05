@@ -10,7 +10,13 @@ class ScheduleRepository(private val context: Context) {
 
     suspend fun getSchedulesByDay(date: String? = null) = apiService.getSchedulesByDay(date)
 
+    suspend fun getScheduleById(id: Int) = apiService.getScheduleById(id)
+
+    suspend fun updateSchedule(id: Int, body: UpdateScheduleRequest) = apiService.updateSchedule(id, body)
+
     suspend fun getHabits() = apiService.getHabits()
+
+    suspend fun getHabitsByUser(userId: Int) = apiService.getHabitsByUser(userId)
 
     suspend fun createHabit(request: CreateHabitRequest) = apiService.createHabit(request)
 
@@ -24,5 +30,7 @@ class ScheduleRepository(private val context: Context) {
 
     suspend fun createWeekdayRecurringSchedule(request: CreateWeekdayRecurringScheduleRequest) =
         apiService.createWeekdayRecurringSchedule(request)
-}
 
+    suspend fun createProgress(request: CreateProgressRequest) =
+        apiService.createProgress(request)
+}

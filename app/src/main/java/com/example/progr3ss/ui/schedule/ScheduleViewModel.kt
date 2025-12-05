@@ -21,6 +21,9 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     private val _schedules = MutableLiveData<List<ScheduleResponseDto>>()
     val schedules: LiveData<List<ScheduleResponseDto>> = _schedules
 
+    private val _selectedSchedule = MutableLiveData<ScheduleResponseDto?>()
+    val selectedSchedule: LiveData<ScheduleResponseDto?> = _selectedSchedule
+
     private val _loading = MutableLiveData<Boolean>()
     val loading: LiveData<Boolean> = _loading
 
@@ -29,6 +32,9 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
 
     private val _scheduleCreated = MutableLiveData<Boolean>()
     val scheduleCreated: LiveData<Boolean> = _scheduleCreated
+
+    private val _progressCreated = MutableLiveData<Boolean>()
+    val progressCreated: LiveData<Boolean> = _progressCreated
 
     fun loadHabits() {
         viewModelScope.launch {
@@ -73,6 +79,24 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
                 }
             } catch (e: Exception) {
                 _error.value = "Error loading schedules: ${e.message}"
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun loadScheduleById(id: Int) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = repository.getScheduleById(id)
+                if (response.isSuccessful) {
+                    _selectedSchedule.value = response.body()
+                } else {
+                    _error.value = "Failed to load schedule: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                _error.value = "Error loading schedule: ${e.message}"
             } finally {
                 _loading.value = false
             }
@@ -152,6 +176,77 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
                 _error.value = "Error creating weekday schedule: ${e.message}"
                 _scheduleCreated.value = false
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun updateSchedule(
+        id: Int,
+        startTime: String? = null,
+        endTime: String? = null,
+        durationMinutes: Int? = null,
+        status: String? = null,
+        date: String? = null,
+        isCustom: Boolean? = null,
+        participantIds: List<Int>? = null,
+        notes: String? = null
+    ) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val body = UpdateScheduleRequest(
+                    startTime = startTime,
+                    endTime = endTime,
+                    durationMinutes = durationMinutes,
+                    status = status,
+                    date = date,
+                    isCustom = isCustom,
+                    participantIds = participantIds,
+                    notes = notes
+                )
+                val response = repository.updateSchedule(id, body)
+                if (response.isSuccessful) {
+                    _selectedSchedule.value = response.body()
+                } else {
+                    _error.value = "Failed to update schedule: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                _error.value = "Error updating schedule: ${e.message}"
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun createProgress(
+        scheduleId: Int,
+        date: String,
+        loggedTime: Int? = null,
+        notes: String? = null,
+        isCompleted: Boolean? = null
+    ) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val request = CreateProgressRequest(
+                    scheduleId = scheduleId,
+                    date = date,
+                    loggedTime = loggedTime,
+                    notes = notes,
+                    isCompleted = isCompleted
+                )
+                val response = repository.createProgress(request)
+                if (response.isSuccessful) {
+                    _progressCreated.value = true
+                } else {
+                    _error.value = "Failed to add progress: ${response.code()}"
+                    _progressCreated.value = false
+                }
+            } catch (e: Exception) {
+                _error.value = "Error adding progress: ${e.message}"
+                _progressCreated.value = false
             } finally {
                 _loading.value = false
             }

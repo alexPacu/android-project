@@ -32,6 +32,8 @@ class AddScheduleFragment : Fragment() {
     private val habitList = mutableListOf<HabitResponseDto>()
     private val categoryList = mutableListOf<CategoryDto>()
     private val selectedCustomDays = mutableListOf<Int>()
+    private var habitSpinnerInitialized = false
+    private var suppressHabitSelectionEvent = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,8 +88,8 @@ class AddScheduleFragment : Fragment() {
 
     private fun setupViews() {
         val goalUnits = resources.getStringArray(R.array.goal_units)
-        val unitAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, goalUnits)
-        unitAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val unitAdapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, goalUnits)
+        unitAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerGoalUnit.adapter = unitAdapter
 
         binding.cardTime.setOnClickListener {
@@ -107,39 +109,51 @@ class AddScheduleFragment : Fragment() {
     }
 
     private fun setupHabitSpinner() {
-        val habitOptions = mutableListOf("+ Create New Habit")
+        val habitOptions = mutableListOf("", "+ Create New Habit")
         habitOptions.addAll(habitList.map { it.name })
 
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, habitOptions)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, habitOptions)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
 
         binding.spinnerHabit.adapter = adapter
+        binding.spinnerHabit.setSelection(0, false)
 
-        binding.spinnerHabit.onItemSelectedListener = null
+        habitSpinnerInitialized = false
+        suppressHabitSelectionEvent = false
 
-        binding.spinnerHabit.setOnItemSelectedListener(object : android.widget.AdapterView.OnItemSelectedListener {
-            private var isFirstTime = true
-
+        binding.spinnerHabit.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (isFirstTime) {
-                    isFirstTime = false
+                if (!habitSpinnerInitialized) {
+                    habitSpinnerInitialized = true
                     return
                 }
 
-                if (position == 0) {
+                if (suppressHabitSelectionEvent) {
+                    suppressHabitSelectionEvent = false
+                    return
+                }
+
+                if (position == 1) {
+                    suppressHabitSelectionEvent = true
+                    binding.spinnerHabit.setSelection(0, false)
                     showCreateHabitDialog()
-                } else {
-                    val habitIndex = position - 1
+                    return
+                }
+
+                if (position > 1) {
+                    val habitIndex = position - 2
                     if (habitIndex >= 0 && habitIndex < habitList.size) {
                         selectedHabitId = habitList[habitIndex].id
                     }
+                } else {
+                    selectedHabitId = null
                 }
             }
 
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
                 selectedHabitId = null
             }
-        })
+        }
     }
 
     private fun showCreateHabitDialog() {
@@ -177,11 +191,6 @@ class AddScheduleFragment : Fragment() {
         spinnerCategory.adapter = categoryAdapter
 
         btnCancel.setOnClickListener {
-            if (habitList.isNotEmpty()) {
-                binding.spinnerHabit.setSelection(1)
-            } else {
-                binding.spinnerHabit.setSelection(0)
-            }
             dialog.dismiss()
         }
 
@@ -215,7 +224,8 @@ class AddScheduleFragment : Fragment() {
                     if (newHabit != null) {
                         selectedHabitId = newHabit.id
                         val habitIndex = habitList.indexOf(newHabit)
-                        binding.spinnerHabit.setSelection(habitIndex + 1)
+                        suppressHabitSelectionEvent = true
+                        binding.spinnerHabit.setSelection(habitIndex + 2, false)
                         Toast.makeText(requireContext(), "Habit created successfully!", Toast.LENGTH_SHORT).show()
                     }
                     dialog.dismiss()

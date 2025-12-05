@@ -38,6 +38,10 @@ class HomeFragment : Fragment() {
 
     private fun setupRecyclerView() {
         scheduleAdapter = ScheduleAdapter()
+        scheduleAdapter.onItemClick = { schedule ->
+            val bundle = Bundle().apply { putInt("scheduleId", schedule.id) }
+            findNavController().navigate(R.id.action_homeFragment_to_scheduleDetailsFragment, bundle)
+        }
         binding.recyclerViewSchedules.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = scheduleAdapter

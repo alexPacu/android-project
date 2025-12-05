@@ -2,346 +2,296 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#1E1E2E">
+        android:background="#121222">
 
-        <!-- App Bar -->
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#1E1E2E"
-            app:elevation="0dp">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize">
-
-                <ImageButton
-                    android:id="@+id/btnBack"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@android:drawable/ic_menu_revert"
-                    app:tint="@android:color/white" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="Edit Schedule"
-                    android:textColor="@android:color/white"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnSave"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:layout_gravity="end"
-                    android:layout_marginEnd="8dp"
-                    android:text="SAVE"
-                    android:textColor="@android:color/white"
-                    android:textSize="12sp"
-                    app:backgroundTint="#6C63FF"
-                    app:cornerRadius="8dp" />
-            </androidx.appcompat.widget.Toolbar>
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="16dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="vertical">
 
-                <!-- Time Range Section -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Time Range"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
+                <!-- Time Range card -->
+                <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="#1C1C30"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp">
 
-                    <!-- Start Time -->
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Time Range"
+                                android:textColor="#B8B8D0"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="8dp">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Start Time"
+                                    android:textColor="#B8B8D0"
+                                    android:textSize="12sp" />
+
+                                <EditText
+                                    android:id="@+id/etStartTime"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:background="#25253A"
+                                    android:padding="10dp"
+                                    android:textColor="@android:color/white"
+                                    android:focusable="false" />
+                            </LinearLayout>
+
+                            <Space
+                                android:layout_width="12dp"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="End Time"
+                                    android:textColor="#B8B8D0"
+                                    android:textSize="12sp" />
+
+                                <EditText
+                                    android:id="@+id/etEndTime"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:background="#25253A"
+                                    android:padding="10dp"
+                                    android:textColor="@android:color/white"
+                                    android:focusable="false" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Duration card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="#1C1C30"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Start Time"
-                            android:textColor="#7F7F9F"
+                            android:text="Duration"
+                            android:textColor="#B8B8D0"
                             android:textSize="12sp" />
 
-                        <com.google.android.material.card.MaterialCardView
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_marginTop="4dp"
-                            app:cardBackgroundColor="#2D2D3D"
-                            app:cardCornerRadius="8dp"
-                            app:cardElevation="0dp">
-
-                            <TextView
-                                android:id="@+id/tvStartTime"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="13:30"
-                                android:textColor="@android:color/white"
-                                android:textSize="16sp" />
-                        </com.google.android.material.card.MaterialCardView>
-                    </LinearLayout>
-
-                    <!-- End Time -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="End Time"
-                            android:textColor="#7F7F9F"
-                            android:textSize="12sp" />
+                            android:orientation="horizontal"
+                            android:layout_marginTop="8dp">
 
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="match_parent"
-                            android:layout_height="48dp"
-                            android:layout_marginTop="4dp"
-                            app:cardBackgroundColor="#2D2D3D"
-                            app:cardCornerRadius="8dp"
-                            app:cardElevation="0dp">
+                            <EditText
+                                android:id="@+id/etDuration"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="#25253A"
+                                android:padding="10dp"
+                                android:inputType="number"
+                                android:textColor="@android:color/white" />
 
-                            <TextView
-                                android:id="@+id/tvEndTime"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:gravity="center"
-                                android:text="14:30"
-                                android:textColor="@android:color/white"
-                                android:textSize="16sp" />
-                        </com.google.android.material.card.MaterialCardView>
+                            <Space
+                                android:layout_width="12dp"
+                                android:layout_height="wrap_content" />
+
+                            <Spinner
+                                android:id="@+id/spinnerDurationUnit"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="#25253A"
+                                android:padding="8dp" />
+                        </LinearLayout>
                     </LinearLayout>
-                </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
-                <!-- Duration -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="Duration"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
+                <!-- Status segmented buttons -->
                 <LinearLayout
+                    android:id="@+id/statusSegment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
-                        app:cardBackgroundColor="#2D2D3D"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp">
-
-                        <EditText
-                            android:id="@+id/etDuration"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@null"
-                            android:gravity="center"
-                            android:inputType="number"
-                            android:text="30"
-                            android:textColor="@android:color/white"
-                            android:textSize="16sp" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        app:cardBackgroundColor="#2D2D3D"
-                        app:cardCornerRadius="8dp"
-                        app:cardElevation="0dp">
-
-                        <androidx.appcompat.widget.AppCompatSpinner
-                            android:id="@+id/spinnerDurationUnit"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp" />
-                    </com.google.android.material.card.MaterialCardView>
-                </LinearLayout>
-
-                <!-- Status -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="Status"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp"
                     android:orientation="horizontal">
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnPlanned"
+                        android:id="@+id/btnStatusPlanned"
+                        style="@style/Widget.MaterialComponents.Button"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
                         android:text="Planned"
+                        android:textAllCaps="false"
+                        android:textSize="13sp"
                         android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        app:backgroundTint="#6C63FF"
-                        app:cornerRadius="8dp" />
+                        app:backgroundTint="#6C63FF" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSkipped"
+                        android:id="@+id/btnStatusSkipped"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
-                        android:layout_marginEnd="8dp"
                         android:text="Skipped"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        app:backgroundTint="#2D2D3D"
-                        app:cornerRadius="8dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        android:textAllCaps="false"
+                        android:textSize="13sp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
 
                     <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCompleted"
+                        android:id="@+id/btnStatusCompleted"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="1"
                         android:text="Completed"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp"
-                        app:backgroundTint="#2D2D3D"
-                        app:cornerRadius="8dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        android:textAllCaps="false"
+                        android:textSize="13sp" />
                 </LinearLayout>
 
-                <!-- Partner -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:text="Partner"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
+                <!-- Notes card (reuse existing EditText inside a card) -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="#2D2D3D"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp">
-
-                        <EditText
-                            android:id="@+id/etPartner"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:hint="Choose partner"
-                            android:textColor="@android:color/white"
-                            android:textColorHint="#7F7F9F" />
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_search"
-                            app:tint="#7F7F9F" />
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Selected Partner -->
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/cardSelectedPartner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:cardBackgroundColor="#2D2D3D"
-                    app:cardCornerRadius="8dp"
+                    app:cardBackgroundColor="#1C1C30"
+                    app:cardCornerRadius="20dp"
                     app:cardElevation="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:padding="12dp">
-
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:src="@android:drawable/ic_menu_myplaces"
-                            app:tint="#9999B3" />
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <TextView
-                            android:id="@+id/tvSelectedPartner"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="12dp"
-                            android:text="Dary Jones"
-                            android:textColor="@android:color/white"
-                            android:textSize="14sp" />
+                            android:text="Notes"
+                            android:textColor="#B8B8D0"
+                            android:textSize="12sp" />
 
-                        <ImageButton
-                            android:id="@+id/btnRemovePartner"
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:src="@android:drawable/ic_menu_close_clear_cancel"
-                            app:tint="#7F7F9F" />
+                        <EditText
+                            android:id="@+id/etNotes"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:layout_marginTop="8dp"
+                            android:background="#25253A"
+                            android:padding="10dp"
+                            android:textColor="@android:color/white"
+                            android:gravity="top"
+                            android:inputType="textMultiLine" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        <LinearLayout
+            android:id="@+id/buttonsContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:textAllCaps="false" />
+
+            <Space
+                android:layout_width="8dp"
+                android:layout_height="wrap_content" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSave"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Save"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#6C63FF" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
-

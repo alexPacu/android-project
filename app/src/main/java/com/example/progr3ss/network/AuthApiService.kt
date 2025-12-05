@@ -4,6 +4,7 @@ import com.example.progr3ss.model.AuthRequest
 import com.example.progr3ss.model.AuthResponse
 import com.example.progr3ss.model.MessageResponse
 import com.example.progr3ss.model.RefreshTokenResponse
+import com.example.progr3ss.model.ProfileResponseDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -30,4 +31,10 @@ interface AuthApiService {
 
     @POST("auth/reset-password-via-email")
     suspend fun resetPassword(@Body body: Map<String, String>): Response<MessageResponse>
+
+    @GET("profile")
+    suspend fun getProfile(): Response<ProfileResponseDto>
+
+    @POST("auth/local/logout")
+    suspend fun logout(): Response<MessageResponse>
 }

@@ -9,497 +9,496 @@
         android:background="#1E1E2E"
         android:fillViewport="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:paddingBottom="32dp">
-
-        <!-- Header -->
-        <TextView
-            android:id="@+id/tvHeader"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/habit_name"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            android:padding="16dp"
+            android:paddingBottom="32dp">
 
-        <!-- Habit Selection Dropdown -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardHabitSelection"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardBackgroundColor="#2D2D3D"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toBottomOf="@id/tvHeader"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <Spinner
-                android:id="@+id/spinnerHabit"
-                android:layout_width="match_parent"
-                android:textColor="@android:color/white"
-                android:layout_height="48dp"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:spinnerMode="dropdown" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Time Label -->
-        <TextView
-            android:id="@+id/tvTimeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/time"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/cardHabitSelection"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- Time Picker -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardTime"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardBackgroundColor="#2D2D3D"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toBottomOf="@id/tvTimeLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <TextView
-                    android:id="@+id/tvTimeValue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="08:00 AM"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_recent_history"
-                    app:tint="#7F7F9F" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Repeat Label -->
-        <TextView
-            android:id="@+id/tvRepeatLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/repeat"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/cardTime"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- Repeat Options -->
-        <LinearLayout
-            android:id="@+id/layoutRepeat"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/tvRepeatLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnOnce"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="Once"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#2D2D3D"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnEveryDay"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="@string/every_day"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#2D2D3D"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnWeekdays"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:text="@string/weekdays"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#2D2D3D"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layoutRepeat2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/layoutRepeat"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnWeekends"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="@string/weekends"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#2D2D3D"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCustom"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:text="@string/custom"
-                android:textSize="12sp"
-                android:textColor="@android:color/white"
-                app:backgroundTint="#2D2D3D"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-        </LinearLayout>
-
-        <!-- Custom Weekday Selector (Initially Hidden) -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardCustomDays"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:visibility="gone"
-            app:cardBackgroundColor="#2D2D3D"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutRepeat2"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/select_days"
-                    android:textColor="@android:color/white"
-                    android:textSize="14sp"
-                    android:layout_marginBottom="12dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <CheckBox
-                        android:id="@+id/cbMonday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/monday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <CheckBox
-                        android:id="@+id/cbTuesday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/tuesday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <CheckBox
-                        android:id="@+id/cbWednesday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/wednesday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <CheckBox
-                        android:id="@+id/cbThursday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/thursday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="8dp">
-
-                    <CheckBox
-                        android:id="@+id/cbFriday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/friday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <CheckBox
-                        android:id="@+id/cbSaturday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/saturday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <CheckBox
-                        android:id="@+id/cbSunday"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/sunday"
-                        android:textColor="@android:color/white"
-                        android:textSize="12sp" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="1dp"
-                        android:layout_weight="1" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Goal Label -->
-        <TextView
-            android:id="@+id/tvGoalLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/goal"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/cardCustomDays"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- Goal Input -->
-        <LinearLayout
-            android:id="@+id/layoutGoal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/tvGoalLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardBackgroundColor="#2D2D3D"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="0dp">
-
-                <EditText
-                    android:id="@+id/etGoalAmount"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@null"
-                    android:hint="@string/amount"
-                    android:inputType="number"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="#7F7F9F" />
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                app:cardBackgroundColor="#2D2D3D"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="0dp">
-
-                <androidx.appcompat.widget.AppCompatSpinner
-                    android:id="@+id/spinnerGoalUnit"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:spinnerMode="dropdown" />
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-
-        <!-- Partner Label -->
-        <TextView
-            android:id="@+id/tvPartnerLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/partner_optional"
-            android:textColor="@android:color/white"
-            android:textSize="16sp"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutGoal"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <!-- Partner Search -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardPartner"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:cardBackgroundColor="#2D2D3D"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="0dp"
-            app:layout_constraintTop_toBottomOf="@id/tvPartnerLabel"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp">
-
-                <EditText
-                    android:id="@+id/etPartnerSearch"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@null"
-                    android:hint="@string/choose_partner"
-                    android:textColor="@android:color/white"
-                    android:textColorHint="#7F7F9F" />
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_search"
-                    app:tint="#7F7F9F" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Reminders -->
-        <LinearLayout
-            android:id="@+id/layoutReminders"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            app:layout_constraintTop_toBottomOf="@id/cardPartner"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/reminders"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/reminders_description"
-                    android:textColor="#7F7F9F"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/switchReminders"
+            <!-- Header -->
+            <TextView
+                android:id="@+id/tvHeader"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:thumbTint="#6C63FF"
-                app:trackTint="#3D3D5C" />
-        </LinearLayout>
-
-        <!-- Bottom Buttons -->
-        <LinearLayout
-            android:id="@+id/layoutButtons"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@id/layoutReminders"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCancel"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:text="@string/cancel"
+                android:text="@string/habit_name"
                 android:textColor="@android:color/white"
-                app:backgroundTint="#2D2D3D"
-                app:cornerRadius="8dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                android:textSize="16sp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnCreate"
+            <!-- Habit Selection Dropdown -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardHabitSelection"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:text="@string/create"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="@color/dark_card"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tvHeader"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinnerHabit"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:spinnerMode="dropdown"
+                    android:theme="@style/ThemeOverlay.MaterialComponents.Dark" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Time Label -->
+            <TextView
+                android:id="@+id/tvTimeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/time"
                 android:textColor="@android:color/white"
-                app:backgroundTint="#6C63FF"
-                app:cornerRadius="8dp" />
-        </LinearLayout>
+                android:textSize="16sp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/cardHabitSelection"
+                app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- Time Picker -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTime"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="@color/dark_card"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tvTimeLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
+
+                    <TextView
+                        android:id="@+id/tvTimeValue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="08:00 AM"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_recent_history"
+                        app:tint="#7F7F9F" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Repeat Label -->
+            <TextView
+                android:id="@+id/tvRepeatLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/repeat"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/cardTime"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Repeat Options -->
+            <LinearLayout
+                android:id="@+id/layoutRepeat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/tvRepeatLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnOnce"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Once"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#2D2D3D"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEveryDay"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/every_day"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#2D2D3D"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWeekdays"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="@string/weekdays"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#2D2D3D"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutRepeat2"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/layoutRepeat"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnWeekends"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/weekends"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#2D2D3D"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCustom"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="@string/custom"
+                    android:textSize="12sp"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#2D2D3D"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            </LinearLayout>
+
+            <!-- Custom Weekday Selector (Initially Hidden) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCustomDays"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="#2D2D3D"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutRepeat2"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/select_days"
+                        android:textColor="@android:color/white"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="12dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/cbMonday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/monday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <CheckBox
+                            android:id="@+id/cbTuesday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/tuesday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <CheckBox
+                            android:id="@+id/cbWednesday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/wednesday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <CheckBox
+                            android:id="@+id/cbThursday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/thursday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="8dp">
+
+                        <CheckBox
+                            android:id="@+id/cbFriday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/friday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <CheckBox
+                            android:id="@+id/cbSaturday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/saturday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <CheckBox
+                            android:id="@+id/cbSunday"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/sunday"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Goal Label -->
+            <TextView
+                android:id="@+id/tvGoalLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/goal"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/cardCustomDays"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Goal Input -->
+            <LinearLayout
+                android:id="@+id/layoutGoal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@id/tvGoalLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardBackgroundColor="@color/dark_card"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+
+                    <EditText
+                        android:id="@+id/etGoalAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@null"
+                        android:hint="@string/amount"
+                        android:inputType="number"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="#7F7F9F" />
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/dark_card"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spinnerGoalUnit"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:spinnerMode="dropdown"
+                        android:theme="@style/ThemeOverlay.MaterialComponents.Dark" />
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+            <!-- Partner Label -->
+            <TextView
+                android:id="@+id/tvPartnerLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/partner_optional"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutGoal"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <!-- Partner Search -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPartner"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:cardBackgroundColor="@color/dark_card"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:layout_constraintTop_toBottomOf="@id/tvPartnerLabel"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
+
+                    <EditText
+                        android:id="@+id/etPartnerSearch"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@null"
+                        android:hint="@string/choose_partner"
+                        android:textColor="@android:color/white"
+                        android:textColorHint="#7F7F9F" />
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@android:drawable/ic_menu_search"
+                        app:tint="#7F7F9F" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Reminders -->
+            <LinearLayout
+                android:id="@+id/layoutReminders"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@id/cardPartner"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reminders"
+                        android:textColor="@android:color/white"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reminders_description"
+                        android:textColor="#7F7F9F"
+                        android:textSize="12sp" />
+                </LinearLayout>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switchReminders"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:thumbTint="#6C63FF"
+                    app:trackTint="#3D3D5C" />
+            </LinearLayout>
+
+            <!-- Bottom Buttons -->
+            <LinearLayout
+                android:id="@+id/layoutButtons"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="24dp"
+                app:layout_constraintTop_toBottomOf="@id/layoutReminders"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/cancel"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#2D2D3D"
+                    app:cornerRadius="8dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCreate"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:text="@string/create"
+                    android:textColor="@android:color/white"
+                    app:backgroundTint="#6C63FF"
+                    app:cornerRadius="8dp" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </layout>
-
