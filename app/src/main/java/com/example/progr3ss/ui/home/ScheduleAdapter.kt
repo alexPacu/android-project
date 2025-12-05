@@ -16,30 +16,21 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>
     private var schedules: List<ScheduleResponseDto> = emptyList()
 
     fun submitList(newSchedules: List<ScheduleResponseDto>) {
-        android.util.Log.d("ScheduleAdapter", "===========================================")
-        android.util.Log.d("ScheduleAdapter", " ADAPTER - submitList called")
-        android.util.Log.d("ScheduleAdapter", "Old list size: ${schedules.size}")
-        android.util.Log.d("ScheduleAdapter", "New list size: ${newSchedules.size}")
         schedules = newSchedules
         notifyDataSetChanged()
-        android.util.Log.d("ScheduleAdapter", "notifyDataSetChanged() called")
-        android.util.Log.d("ScheduleAdapter", "===========================================")
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScheduleViewHolder {
-        android.util.Log.d("ScheduleAdapter", "Creating new ViewHolder")
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_schedule, parent, false)
         return ScheduleViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ScheduleViewHolder, position: Int) {
-        android.util.Log.d("ScheduleAdapter", "Binding ViewHolder at position $position")
         holder.bind(schedules[position])
     }
 
     override fun getItemCount(): Int {
-        android.util.Log.d("ScheduleAdapter", "getItemCount() called, returning: ${schedules.size}")
         return schedules.size
     }
 
@@ -51,11 +42,6 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>
         private val ivStatus: ImageView = itemView.findViewById(R.id.ivStatus)
 
         fun bind(schedule: ScheduleResponseDto) {
-            android.util.Log.d("ScheduleAdapter", "-------------------------------------------")
-            android.util.Log.d("ScheduleAdapter", "Binding schedule:")
-            android.util.Log.d("ScheduleAdapter", "  Title: ${schedule.title}")
-            android.util.Log.d("ScheduleAdapter", "  Start Time: ${schedule.startTime}")
-            android.util.Log.d("ScheduleAdapter", "  Status: ${schedule.scheduleStatus}")
 
             tvTime.text = extractTime(schedule.startTime)
             tvTitle.text = schedule.title

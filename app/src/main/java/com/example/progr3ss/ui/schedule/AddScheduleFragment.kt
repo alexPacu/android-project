@@ -28,7 +28,7 @@ class AddScheduleFragment : Fragment() {
 
     private var selectedHabitId: Int? = null
     private var selectedTime: String = "08:00"
-    private var selectedRepeatPattern: String = "daily"
+    private var selectedRepeatPattern: String = "once"
     private val habitList = mutableListOf<HabitResponseDto>()
     private val categoryList = mutableListOf<CategoryDto>()
     private val selectedCustomDays = mutableListOf<Int>()
@@ -59,27 +59,16 @@ class AddScheduleFragment : Fragment() {
 
     private fun setupObservers() {
         viewModel.habits.observe(viewLifecycleOwner) { habits ->
-            android.util.Log.d("AddScheduleFragment", "Habits loaded from ViewModel: ${habits.size}")
-            habits.forEach { habit ->
-                android.util.Log.d("AddScheduleFragment", "Habit: ${habit.id} - ${habit.name}")
-            }
             habitList.clear()
             habitList.addAll(habits)
             setupHabitSpinner()
         }
 
         viewModel.categories.observe(viewLifecycleOwner) { categories ->
-            android.util.Log.d("AddScheduleFragment", "Categories loaded: ${categories.size}")
-            categories.forEach { category ->
-                android.util.Log.d("AddScheduleFragment", "Category: ${category.id} - ${category.name}")
-            }
             categoryList.clear()
             categoryList.addAll(categories)
         }
 
-        viewModel.loading.observe(viewLifecycleOwner) { _ ->
-
-        }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMessage ->
             errorMessage?.let {
@@ -118,8 +107,6 @@ class AddScheduleFragment : Fragment() {
     }
 
     private fun setupHabitSpinner() {
-        android.util.Log.d("AddScheduleFragment", "Setting up habit spinner with ${habitList.size} habits")
-
         val habitOptions = mutableListOf("+ Create New Habit")
         habitOptions.addAll(habitList.map { it.name })
 
@@ -136,20 +123,15 @@ class AddScheduleFragment : Fragment() {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
                 if (isFirstTime) {
                     isFirstTime = false
-                    android.util.Log.d("AddScheduleFragment", "First time selection at position $position - ignoring")
                     return
                 }
 
-                android.util.Log.d("AddScheduleFragment", "User selected position: $position")
-
                 if (position == 0) {
-                    android.util.Log.d("AddScheduleFragment", "Opening create habit dialog")
                     showCreateHabitDialog()
                 } else {
                     val habitIndex = position - 1
                     if (habitIndex >= 0 && habitIndex < habitList.size) {
                         selectedHabitId = habitList[habitIndex].id
-                        android.util.Log.d("AddScheduleFragment", "Selected habit ID: $selectedHabitId")
                     }
                 }
             }
@@ -190,7 +172,6 @@ class AddScheduleFragment : Fragment() {
         val btnCreate = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCreateHabit)
 
         val categoryNames = categoryList.map { it.name }
-        android.util.Log.d("AddScheduleFragment", "Category list size: ${categoryList.size}, names: $categoryNames")
         val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryNames)
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinnerCategory.adapter = categoryAdapter
@@ -208,7 +189,8 @@ class AddScheduleFragment : Fragment() {
             val name = etHabitName.text.toString().trim()
             val description = etHabitDescription.text.toString().trim().ifEmpty { null }
             val categoryPosition = spinnerCategory.selectedItemPosition
-            val goal = etHabitGoal.text.toString().trim().ifEmpty { null }
+            val goalText = etHabitGoal.text.toString().trim()
+            val goal = goalText.ifEmpty { "Complete $name consistently" }
 
             if (name.isEmpty()) {
                 Toast.makeText(requireContext(), "Please enter habit name", Toast.LENGTH_SHORT).show()
@@ -263,6 +245,7 @@ class AddScheduleFragment : Fragment() {
 
     private fun setupRepeatButtons() {
         val buttons = listOf(
+            binding.btnOnce to "once",
             binding.btnEveryDay to "daily",
             binding.btnWeekdays to "weekdays",
             binding.btnWeekends to "weekends",
@@ -277,7 +260,7 @@ class AddScheduleFragment : Fragment() {
             }
         }
 
-        updateRepeatButtonsUI(binding.btnEveryDay)
+        updateRepeatButtonsUI(binding.btnOnce)
         binding.cardCustomDays.visibility = View.GONE
     }
 
@@ -307,6 +290,7 @@ class AddScheduleFragment : Fragment() {
 
     private fun updateRepeatButtonsUI(selectedButton: com.google.android.material.button.MaterialButton) {
         val buttons = listOf(
+            binding.btnOnce,
             binding.btnEveryDay,
             binding.btnWeekdays,
             binding.btnWeekends,
@@ -338,35 +322,23 @@ class AddScheduleFragment : Fragment() {
 
         val durationText = binding.etGoalAmount.text.toString()
         val durationMinutes = if (durationText.isNotEmpty()) durationText.toIntOrNull() else null
-
         val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
-        val startTimeISO = "${currentDate}T${selectedTime}:00.000Z"
+
+        val startTimeIso = "${currentDate}T${selectedTime}:00.000Z"
+
 
         when (selectedRepeatPattern) {
-            "daily" -> {
+            "daily", "weekdays", "weekends" -> {
                 val request = CreateRecurringScheduleRequest(
                     habitId = selectedHabitId!!,
-                    startTime = startTimeISO,
-                    repeatPattern = "daily",
-                    durationMinutes = durationMinutes
-                )
-                viewModel.createRecurringSchedule(request)
-            }
-            "weekdays" -> {
-                val request = CreateRecurringScheduleRequest(
-                    habitId = selectedHabitId!!,
-                    startTime = startTimeISO,
-                    repeatPattern = "weekdays",
-                    durationMinutes = durationMinutes
-                )
-                viewModel.createRecurringSchedule(request)
-            }
-            "weekends" -> {
-                val request = CreateRecurringScheduleRequest(
-                    habitId = selectedHabitId!!,
-                    startTime = startTimeISO,
-                    repeatPattern = "weekends",
-                    durationMinutes = durationMinutes
+                    startTime = startTimeIso,
+                    repeatPattern = selectedRepeatPattern,
+                    endTime = null,
+                    durationMinutes = durationMinutes,
+                    repeatDays = 30,
+                    isCustom = true,
+                    participantIds = null,
+                    notes = null
                 )
                 viewModel.createRecurringSchedule(request)
             }
@@ -377,13 +349,29 @@ class AddScheduleFragment : Fragment() {
                 }
                 val request = CreateWeekdayRecurringScheduleRequest(
                     habitId = selectedHabitId!!,
-                    startTime = startTimeISO,
+                    startTime = startTimeIso,
                     daysOfWeek = selectedCustomDays.sorted(),
-                    durationMinutes = durationMinutes
+                    numberOfWeeks = 4,
+                    durationMinutes = durationMinutes,
+                    endTime = null,
+                    participantIds = null,
+                    notes = null
                 )
                 viewModel.createWeekdayRecurringSchedule(request)
+            }
+            else -> {
+                val request = CreateCustomScheduleRequest(
+                    habitId = selectedHabitId!!,
+                    date = currentDate,
+                    startTime = startTimeIso,
+                    endTime = null,
+                    durationMinutes = durationMinutes,
+                    isCustom = true,
+                    participantIds = null,
+                    notes = null
+                )
+                viewModel.createCustomSchedule(request)
             }
         }
     }
 }
-

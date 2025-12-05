@@ -24,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
 
         val autoLoginSuccess = intent.getBooleanExtra("AUTO_LOGIN_SUCCESS", false)
-        android.util.Log.d("MainActivity", "AUTO_LOGIN_SUCCESS=$autoLoginSuccess")
 
         val navInflater = navController.navInflater
         val graph = navInflater.inflate(R.navigation.nav_graph)

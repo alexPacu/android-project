@@ -68,8 +68,8 @@ data class HabitResponseDto(
     val id: Int,
     val name: String,
     val description: String?,
-    val icon: String?,
-    val color: String?,
+    val category: CategoryDto,
+    val goal: String?,
     @SerializedName("created_at")
     val createdAt: String?,
     @SerializedName("updated_at")
@@ -85,8 +85,8 @@ data class CategoryDto(
 data class CreateHabitRequest(
     val name: String,
     val description: String? = null,
-    val categoryId: Int? = null,
-    val goal: String? = null
+    val categoryId: Int,
+    val goal: String
 )
 
 data class CreateCustomScheduleRequest(
@@ -111,12 +111,12 @@ data class CreateRecurringScheduleRequest(
     val habitId: Int,
     @SerializedName("start_time")
     val startTime: String,
-    @SerializedName("repeatPattern")
-    val repeatPattern: String, // "none", "daily", "weekdays", "weekends"
     @SerializedName("end_time")
     val endTime: String? = null,
     @SerializedName("duration_minutes")
     val durationMinutes: Int? = null,
+    @SerializedName("repeatPattern")
+    val repeatPattern: String, // "none", "daily", "weekdays", "weekends"
     @SerializedName("repeatDays")
     val repeatDays: Int = 30,
     @SerializedName("is_custom")
@@ -135,10 +135,12 @@ data class CreateWeekdayRecurringScheduleRequest(
     val daysOfWeek: List<Int>, // 1=Monday ... 7=Sunday
     @SerializedName("numberOfWeeks")
     val numberOfWeeks: Int = 4,
-    @SerializedName("duration_minutes")
-    val durationMinutes: Int? = null,
     @SerializedName("end_time")
     val endTime: String? = null,
+    @SerializedName("duration_minutes")
+    val durationMinutes: Int? = null,
+    @SerializedName("is_custom")
+    val isCustom: Boolean = true,
     @SerializedName("participantIds")
     val participantIds: List<Int>? = null,
     val notes: String? = null

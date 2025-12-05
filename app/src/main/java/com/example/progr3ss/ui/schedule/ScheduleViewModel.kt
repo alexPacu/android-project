@@ -51,23 +51,12 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     fun loadCategories() {
         viewModelScope.launch {
             try {
-                android.util.Log.d("ScheduleViewModel", "Loading categories from habit/categories")
                 val response = repository.getCategories()
-                android.util.Log.d("ScheduleViewModel", "Category response: code=${response.code()}, isSuccessful=${response.isSuccessful}")
                 if (response.isSuccessful) {
                     val categories = response.body() ?: emptyList()
-                    android.util.Log.d("ScheduleViewModel", "Categories loaded: ${categories.size} items")
-                    categories.forEach {
-                        android.util.Log.d("ScheduleViewModel", "Category: id=${it.id}, name=${it.name}, iconUrl=${it.iconUrl}")
-                    }
                     _categories.value = categories
-                } else {
-                    val errorBody = response.errorBody()?.string()
-                    android.util.Log.e("ScheduleViewModel", "Failed to load categories: ${response.code()} - ${response.message()}")
-                    android.util.Log.e("ScheduleViewModel", "Error body: $errorBody")
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ScheduleViewModel", "Error loading categories: ${e.message}", e)
             }
         }
     }
@@ -90,25 +79,18 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun createHabit(name: String, description: String? = null, categoryId: Int? = null, goal: String? = null) {
+    fun createHabit(name: String, description: String? = null, categoryId: Int, goal: String) {
         viewModelScope.launch {
             _loading.value = true
             try {
                 val request = CreateHabitRequest(name, description, categoryId, goal)
-                android.util.Log.d("ScheduleViewModel", "Creating habit with name: $name, categoryId: $categoryId")
                 val response = repository.createHabit(request)
-                android.util.Log.d("ScheduleViewModel", "Response code: ${response.code()}")
                 if (response.isSuccessful) {
-                    android.util.Log.d("ScheduleViewModel", "Habit created successfully")
                     loadHabits()
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    android.util.Log.e("ScheduleViewModel", "Failed to create habit: ${response.code()} - ${response.message()}")
-                    android.util.Log.e("ScheduleViewModel", "Error body: $errorBody")
-                    _error.value = "Failed to create habit: ${response.code()} - $errorBody"
+                    _error.value = "Failed to create habit: ${response.code()}"
                 }
             } catch (e: Exception) {
-                android.util.Log.e("ScheduleViewModel", "Exception creating habit", e)
                 _error.value = "Error creating habit: ${e.message}"
             } finally {
                 _loading.value = false
@@ -124,7 +106,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
                 if (response.isSuccessful) {
                     _scheduleCreated.value = true
                 } else {
-                    _error.value = "Failed to create schedule: ${response.message()}"
+                    _error.value = "Failed to create schedule: ${response.code()}"
                     _scheduleCreated.value = false
                 }
             } catch (e: Exception) {
@@ -144,7 +126,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
                 if (response.isSuccessful) {
                     _scheduleCreated.value = true
                 } else {
-                    _error.value = "Failed to create recurring schedule: ${response.message()}"
+                    _error.value = "Failed to create recurring schedule: ${response.code()}"
                     _scheduleCreated.value = false
                 }
             } catch (e: Exception) {
@@ -164,7 +146,7 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
                 if (response.isSuccessful) {
                     _scheduleCreated.value = true
                 } else {
-                    _error.value = "Failed to create weekday schedule: ${response.message()}"
+                    _error.value = "Failed to create weekday schedule: ${response.code()}"
                     _scheduleCreated.value = false
                 }
             } catch (e: Exception) {
@@ -176,4 +158,3 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
         }
     }
 }
-

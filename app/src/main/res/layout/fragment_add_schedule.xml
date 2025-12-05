@@ -43,6 +43,7 @@
             <Spinner
                 android:id="@+id/spinnerHabit"
                 android:layout_width="match_parent"
+                android:textColor="@android:color/white"
                 android:layout_height="48dp"
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp"
@@ -121,6 +122,19 @@
             app:layout_constraintTop_toBottomOf="@id/tvRepeatLabel"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOnce"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Once"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#2D2D3D"
+                app:cornerRadius="8dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEveryDay"
