@@ -4,10 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.progr3ss.R
 import com.example.progr3ss.databinding.FragmentScheduleDetailsBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ScheduleDetailsFragment : Fragment() {
 
@@ -37,14 +42,63 @@ class ScheduleDetailsFragment : Fragment() {
         val scheduleId = arguments?.getInt("scheduleId") ?: -1
 
         binding.btnEditSchedule.setOnClickListener {
-            val bundle = Bundle().apply { putInt("scheduleId", scheduleId) }
-            parentFragmentManager.setFragmentResult("edit_schedule_request", bundle)
+            val action = com.example.progr3ss.R.id.action_scheduleDetailsFragment_to_editScheduleFragment
+            val args = Bundle().apply { putInt("scheduleId", scheduleId) }
+            findNavController().navigate(action, args)
+        }
+
+        binding.btnEditNotes.setOnClickListener {
+            val dialog = EditNotesDialogFragment()
+            val args = Bundle().apply {
+                putString("notes", viewModel.selectedSchedule.value?.notes ?: "")
+                putInt("scheduleId", scheduleId)
+            }
+            dialog.arguments = args
+            dialog.show(parentFragmentManager, "EditNotesDialog")
+        }
+
+        binding.btnOptions.setOnClickListener {
+            showOptionsMenu(it)
         }
 
         observeViewModel()
         if (scheduleId != -1) {
             viewModel.loadScheduleById(scheduleId)
         }
+
+        viewModel.scheduleDeleted.observe(viewLifecycleOwner) { deleted ->
+            if (deleted == true) {
+                val navOptions = NavOptions.Builder()
+                    .setPopUpTo(R.id.homeFragment, inclusive = false)
+                    .build()
+                findNavController().navigate(R.id.homeFragment, null, navOptions)
+            }
+        }
+    }
+
+    private fun showOptionsMenu(anchor: View) {
+        val context = requireContext()
+        val popup = PopupMenu(context, anchor)
+        popup.menu.add(0, 1, 0, "Delete")
+        popup.setOnMenuItemClickListener { item ->
+            if (item.itemId == 1) {
+                confirmDelete()
+                true
+            } else false
+        }
+        popup.show()
+    }
+
+    private fun confirmDelete() {
+        val scheduleId = viewModel.selectedSchedule.value?.id ?: return
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Delete Schedule")
+            .setMessage("Are you sure?")
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("Delete") { _, _ ->
+                viewModel.deleteSchedule(scheduleId)
+            }
+            .show()
     }
 
     private fun observeViewModel() {
@@ -79,6 +133,12 @@ class ScheduleDetailsFragment : Fragment() {
                     ?: emptyList()
 
                 activityAdapter.submitList(progressItems.sortedByDescending { it.date })
+
+                val total = progressItems.size
+                val completed = progressItems.count { it.isCompleted }
+                val percent = if (total > 0) (completed * 100 / total) else 0
+                binding.pbCompletion.progress = percent
+                binding.tvCompletionPercent.text = "$percent%"
             }
         }
 
@@ -89,6 +149,14 @@ class ScheduleDetailsFragment : Fragment() {
         viewModel.error.observe(viewLifecycleOwner) { error ->
             binding.tvError.visibility = if (error.isNullOrEmpty()) View.GONE else View.VISIBLE
             binding.tvError.text = error
+        }
+
+        // Optimistic notes update: listen for fragment result from dialog and update UI immediately
+        parentFragmentManager.setFragmentResultListener("notes_updated", viewLifecycleOwner) { _, bundle ->
+            val newNotes = bundle.getString("notes")
+            if (newNotes != null) {
+                binding.tvNotes.text = if (newNotes.isNotBlank()) newNotes else "No notes"
+            }
         }
     }
 

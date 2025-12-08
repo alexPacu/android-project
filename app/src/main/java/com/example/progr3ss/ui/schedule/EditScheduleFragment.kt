@@ -86,14 +86,21 @@ class EditScheduleFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.selectedSchedule.observe(viewLifecycleOwner) { schedule ->
             if (schedule != null) {
-                // If you add a title TextView for the habit in the layout, bind it here
-                // binding.tvHabitName.text = schedule.habit.name
                 binding.etStartTime.setText(schedule.startTime.substringAfter("T").substring(0, 5))
                 schedule.endTime?.let {
                     binding.etEndTime.setText(it.substringAfter("T").substring(0, 5))
                 }
                 binding.etDuration.setText(schedule.durationMinutes?.toString() ?: "")
                 binding.etNotes.setText(schedule.notes ?: "")
+
+                val participantsPrefill = schedule.participants?.mapNotNull { p ->
+                    when (p) {
+                        is Map<*, *> -> (p["id"] as? Number)?.toInt()
+                        is Number -> p.toInt()
+                        else -> null
+                    }
+                }?.joinToString(",") ?: ""
+                binding.etParticipants.setText(participantsPrefill)
 
                 selectedStatus = when (schedule.status) {
                     "Planned" -> "Planned"
@@ -117,12 +124,21 @@ class EditScheduleFragment : Fragment() {
         }
     }
 
+    private fun parseParticipants(text: String): List<Int>? {
+        val trimmed = text.trim()
+        if (trimmed.isEmpty()) return null
+        return trimmed.split(',')
+            .mapNotNull { it.trim().toIntOrNull() }
+            .takeIf { it.isNotEmpty() }
+    }
+
     private fun saveChanges() {
         val schedule = viewModel.selectedSchedule.value ?: return
         val startTimeInput = binding.etStartTime.text.toString()
         val endTimeInput = binding.etEndTime.text.toString()
         val durationInput = binding.etDuration.text.toString().toIntOrNull()
         val notesInput = binding.etNotes.text.toString().ifBlank { null }
+        val participantsInput = parseParticipants(binding.etParticipants.text.toString())
         val status = selectedStatus
 
         val date = schedule.date.substringBefore("T")
@@ -137,7 +153,7 @@ class EditScheduleFragment : Fragment() {
             status = status,
             date = schedule.date,
             isCustom = schedule.isCustom,
-            participantIds = null,
+            participantIds = participantsInput,
             notes = notesInput
         )
         Toast.makeText(requireContext(), "Schedule updated", Toast.LENGTH_SHORT).show()

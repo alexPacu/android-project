@@ -33,4 +33,6 @@ class ScheduleRepository(private val context: Context) {
 
     suspend fun createProgress(request: CreateProgressRequest) =
         apiService.createProgress(request)
+
+    suspend fun deleteSchedule(id: Int) = apiService.deleteSchedule(id)
 }

@@ -6,7 +6,6 @@ import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.example.progr3ss.databinding.ActivityMainBinding
 import com.google.android.material.appbar.MaterialToolbar
 
@@ -41,7 +40,27 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.let {
             setupActionBarWithNavController(navController, appBarConfiguration)
         }
-        binding.bottomNav.setupWithNavController(navController)
+        binding.bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.homeFragment -> {
+                    val options = androidx.navigation.NavOptions.Builder()
+                        .setPopUpTo(R.id.nav_graph, inclusive = false)
+                        .setLaunchSingleTop(true)
+                        .build()
+                    navController.navigate(R.id.homeFragment, null, options)
+                    true
+                }
+                R.id.profileFragment -> {
+                    val options = androidx.navigation.NavOptions.Builder()
+                        .setPopUpTo(R.id.nav_graph, inclusive = false)
+                        .setLaunchSingleTop(true)
+                        .build()
+                    navController.navigate(R.id.profileFragment, null, options)
+                    true
+                }
+                else -> false
+            }
+        }
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val isAuthScreen = destination.id == R.id.loginFragment ||

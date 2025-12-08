@@ -53,4 +53,7 @@ interface ScheduleApiService {
     suspend fun createProgress(
         @Body request: CreateProgressRequest
     ): Response<ProgressResponseDto>
+
+    @DELETE("schedule/{id}")
+    suspend fun deleteSchedule(@Path("id") id: Int): Response<Unit>
 }

@@ -195,7 +195,8 @@
                         android:layout_weight="1"
                         android:text="Skipped"
                         android:textAllCaps="false"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textColor="@android:color/white" />
 
                     <Space
                         android:layout_width="8dp"
@@ -209,7 +210,8 @@
                         android:layout_weight="1"
                         android:text="Completed"
                         android:textAllCaps="false"
-                        android:textSize="13sp" />
+                        android:textSize="13sp"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
 
                 <!-- Notes card (reuse existing EditText inside a card) -->
@@ -246,6 +248,41 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Participants card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardBackgroundColor="#1C1C30"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="0dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Participants (IDs, comma-separated)"
+                            android:textColor="#B8B8D0"
+                            android:textSize="12sp" />
+
+                        <EditText
+                            android:id="@+id/etParticipants"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:background="#25253A"
+                            android:padding="10dp"
+                            android:textColor="@android:color/white"
+                            android:hint="e.g. 2,5,9"
+                            android:inputType="text" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
         </ScrollView>
 
@@ -265,7 +302,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Cancel"
-                android:textAllCaps="false" />
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#25253A" />
 
             <Space
                 android:layout_width="8dp"

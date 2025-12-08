@@ -36,6 +36,9 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
     private val _progressCreated = MutableLiveData<Boolean>()
     val progressCreated: LiveData<Boolean> = _progressCreated
 
+    private val _scheduleDeleted = MutableLiveData<Boolean>()
+    val scheduleDeleted: LiveData<Boolean> = _scheduleDeleted
+
     fun loadHabits() {
         viewModelScope.launch {
             _loading.value = true
@@ -247,6 +250,26 @@ class ScheduleViewModel(application: Application) : AndroidViewModel(application
             } catch (e: Exception) {
                 _error.value = "Error adding progress: ${e.message}"
                 _progressCreated.value = false
+            } finally {
+                _loading.value = false
+            }
+        }
+    }
+
+    fun deleteSchedule(id: Int) {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val response = repository.deleteSchedule(id)
+                if (response.isSuccessful) {
+                    _scheduleDeleted.value = true
+                } else {
+                    _error.value = "Failed to delete schedule: ${response.code()}"
+                    _scheduleDeleted.value = false
+                }
+            } catch (e: Exception) {
+                _error.value = "Error deleting schedule: ${e.message}"
+                _scheduleDeleted.value = false
             } finally {
                 _loading.value = false
             }
