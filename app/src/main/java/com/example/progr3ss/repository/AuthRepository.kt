@@ -2,10 +2,14 @@ package com.example.progr3ss.repository
 
 import android.content.Context
 import com.example.progr3ss.model.AuthRequest
+import com.example.progr3ss.model.UpdateProfileRequest
 import com.example.progr3ss.network.RetrofitClient
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 
 class AuthRepository(context: Context) {
     private val api = RetrofitClient.getInstance(context)
@@ -31,6 +35,16 @@ class AuthRepository(context: Context) {
     suspend fun resetPassword(email: String) = api.resetPassword(mapOf("email" to email))
 
     suspend fun getProfile() = api.getProfile()
+
+    suspend fun updateProfile(username: String?, description: String?) =
+        api.updateProfile(UpdateProfileRequest(username = username, description = description))
+
+    suspend fun uploadProfileImage(imageFile: File, mimeType: String? = null) : retrofit2.Response<com.example.progr3ss.model.ProfileResponseDto> {
+        val contentType = (mimeType?.let { it.toMediaType() }) ?: "image/*".toMediaType()
+        val requestFile = imageFile.asRequestBody(contentType)
+        val part = MultipartBody.Part.createFormData("profileImage", imageFile.name, requestFile)
+        return api.uploadProfileImage(part)
+    }
 
     suspend fun logout() = api.logout()
 

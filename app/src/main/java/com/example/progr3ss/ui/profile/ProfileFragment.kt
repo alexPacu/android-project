@@ -48,7 +48,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnEditProfile.setOnClickListener {
-            Toast.makeText(requireContext(), "Edit profile coming soon", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.editProfileFragment)
         }
 
         observeViewModel()
@@ -57,9 +57,12 @@ class ProfileFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.profile.observe(viewLifecycleOwner) { profile ->
-            profile?.let {
-                binding.tvUsername.text = it.username
-                binding.tvEmail.text = it.email
+            if (profile == null) {
+                binding.tvUsername.text = ""
+                binding.tvEmail.text = ""
+            } else {
+                binding.tvUsername.text = profile.username
+                binding.tvEmail.text = profile.email
             }
         }
 

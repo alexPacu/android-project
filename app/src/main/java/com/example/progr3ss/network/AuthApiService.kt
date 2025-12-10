@@ -5,6 +5,7 @@ import com.example.progr3ss.model.AuthResponse
 import com.example.progr3ss.model.MessageResponse
 import com.example.progr3ss.model.RefreshTokenResponse
 import com.example.progr3ss.model.ProfileResponseDto
+import com.example.progr3ss.model.UpdateProfileRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -34,6 +35,13 @@ interface AuthApiService {
 
     @GET("profile")
     suspend fun getProfile(): Response<ProfileResponseDto>
+
+    @PATCH("profile")
+    suspend fun updateProfile(@Body body: UpdateProfileRequest): Response<ProfileResponseDto>
+
+    @Multipart
+    @POST("profile/upload-profile-image")
+    suspend fun uploadProfileImage(@Part profileImage: MultipartBody.Part): Response<ProfileResponseDto>
 
     @POST("auth/local/logout")
     suspend fun logout(): Response<MessageResponse>
