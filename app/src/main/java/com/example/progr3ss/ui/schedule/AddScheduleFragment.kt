@@ -11,15 +11,16 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.progr3ss.R
 import com.example.progr3ss.databinding.FragmentAddScheduleBinding
 import com.example.progr3ss.model.*
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import android.widget.AdapterView
 
 class AddScheduleFragment : Fragment() {
 
@@ -32,8 +33,6 @@ class AddScheduleFragment : Fragment() {
     private val habitList = mutableListOf<HabitResponseDto>()
     private val categoryList = mutableListOf<CategoryDto>()
     private val selectedCustomDays = mutableListOf<Int>()
-    private var habitSpinnerInitialized = false
-    private var suppressHabitSelectionEvent = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -92,162 +91,43 @@ class AddScheduleFragment : Fragment() {
         unitAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
         binding.spinnerGoalUnit.adapter = unitAdapter
 
-        binding.cardTime.setOnClickListener {
-            showTimePicker()
-        }
+        binding.cardTime.setOnClickListener { showTimePickerForStart() }
+        // binding.cardEndTime.setOnClickListener { showTimePickerForEnd() }
 
         setupRepeatButtons()
         setupCustomDayCheckboxes()
 
-        binding.btnCreate.setOnClickListener {
-            createSchedule()
+        binding.etGoalAmount.setOnFocusChangeListener { _, _ -> syncEndTimeWithDuration() }
+        binding.etGoalAmount.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) { syncEndTimeWithDuration() }
+        })
+
+        binding.spinnerGoalUnit.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                syncEndTimeWithDuration()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
-        binding.btnCancel.setOnClickListener {
-            findNavController().navigateUp()
-        }
+        binding.btnCreate.setOnClickListener { createSchedule() }
+        binding.btnCancel.setOnClickListener { findNavController().navigateUp() }
     }
 
-    private fun setupHabitSpinner() {
-        val habitOptions = mutableListOf("", "+ Create New Habit")
-        habitOptions.addAll(habitList.map { it.name })
-
-        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, habitOptions)
-        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
-
-        binding.spinnerHabit.adapter = adapter
-        binding.spinnerHabit.setSelection(0, false)
-
-        habitSpinnerInitialized = false
-        suppressHabitSelectionEvent = false
-
-        binding.spinnerHabit.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (!habitSpinnerInitialized) {
-                    habitSpinnerInitialized = true
-                    return
-                }
-
-                if (suppressHabitSelectionEvent) {
-                    suppressHabitSelectionEvent = false
-                    return
-                }
-
-                if (position == 1) {
-                    suppressHabitSelectionEvent = true
-                    binding.spinnerHabit.setSelection(0, false)
-                    showCreateHabitDialog()
-                    return
-                }
-
-                if (position > 1) {
-                    val habitIndex = position - 2
-                    if (habitIndex >= 0 && habitIndex < habitList.size) {
-                        selectedHabitId = habitList[habitIndex].id
-                    }
-                } else {
-                    selectedHabitId = null
-                }
-            }
-
-            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {
-                selectedHabitId = null
-            }
-        }
+    private fun showTimePickerForStart() {
+        val parts = selectedTime.split(":")
+        val sh = parts.getOrNull(0)?.toIntOrNull() ?: 8
+        val sm = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        TimePickerDialog(requireContext(), { _, h, m ->
+            selectedTime = String.format(Locale.US, "%02d:%02d", h, m)
+            binding.tvTimeValue.text = formatTime(h, m)
+            syncEndTimeWithDuration()
+        }, sh, sm, true).show()
     }
 
-    private fun showCreateHabitDialog() {
-        if (categoryList.isEmpty()) {
-            Toast.makeText(requireContext(), "Loading categories, please wait...", Toast.LENGTH_SHORT).show()
-            viewModel.loadCategories()
-            lifecycleScope.launch {
-                delay(1000)
-                if (categoryList.isNotEmpty()) {
-                    showCreateHabitDialog()
-                } else {
-                    Toast.makeText(requireContext(), "Failed to load categories. Please try again.", Toast.LENGTH_LONG).show()
-                }
-            }
-            return
-        }
-
-        val dialogView = layoutInflater.inflate(R.layout.dialog_create_habit, null)
-        val dialog = android.app.AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        val etHabitName = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etHabitName)
-        val etHabitDescription = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etHabitDescription)
-        val spinnerCategory = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerCategory)
-        val etHabitGoal = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etHabitGoal)
-        val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancelHabit)
-        val btnCreate = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCreateHabit)
-
-        val categoryNames = categoryList.map { it.name }
-        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryNames)
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinnerCategory.adapter = categoryAdapter
-
-        btnCancel.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        btnCreate.setOnClickListener {
-            val name = etHabitName.text.toString().trim()
-            val description = etHabitDescription.text.toString().trim().ifEmpty { null }
-            val categoryPosition = spinnerCategory.selectedItemPosition
-            val goalText = etHabitGoal.text.toString().trim()
-            val goal = goalText.ifEmpty { "Complete $name consistently" }
-
-            if (name.isEmpty()) {
-                Toast.makeText(requireContext(), "Please enter habit name", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (categoryPosition < 0 || categoryPosition >= categoryList.size) {
-                Toast.makeText(requireContext(), "Please select a category", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val categoryId = categoryList[categoryPosition].id
-
-            lifecycleScope.launch {
-                try {
-                    viewModel.createHabit(name, description, categoryId, goal)
-                    delay(1000)
-                    viewModel.loadHabits()
-                    delay(500)
-
-                    val newHabit = habitList.find { it.name.equals(name, ignoreCase = true) }
-                    if (newHabit != null) {
-                        selectedHabitId = newHabit.id
-                        val habitIndex = habitList.indexOf(newHabit)
-                        suppressHabitSelectionEvent = true
-                        binding.spinnerHabit.setSelection(habitIndex + 2, false)
-                        Toast.makeText(requireContext(), "Habit created successfully!", Toast.LENGTH_SHORT).show()
-                    }
-                    dialog.dismiss()
-                } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "Failed to create habit: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
-            }
-        }
-
-        dialog.show()
-    }
-
-    private fun showTimePicker() {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-
-        TimePickerDialog(requireContext(), { _, selectedHour, selectedMinute ->
-            selectedTime = String.format(Locale.US, "%02d:%02d", selectedHour, selectedMinute)
-            binding.tvTimeValue.text = formatTime(selectedHour, selectedMinute)
-        }, hour, minute, true).show()
-    }
+    // private fun showTimePickerForEnd() {
+    // }
 
     private fun formatTime(hour: Int, minute: Int): String {
         return String.format(Locale.getDefault(), "%02d:%02d", hour, minute)
@@ -324,6 +204,74 @@ class AddScheduleFragment : Fragment() {
         createScheduleWithHabitId()
     }
 
+    private fun setupHabitSpinner() {
+        val habitOptions = mutableListOf("", "+ Create New Habit")
+        habitOptions.addAll(habitList.map { it.name })
+
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_dark, habitOptions)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_dark)
+
+        binding.spinnerHabit.adapter = adapter
+        binding.spinnerHabit.setSelection(0, false)
+
+        binding.spinnerHabit.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                if (position == 1) {
+                    binding.spinnerHabit.setSelection(0, false)
+                    showCreateHabitDialog()
+                    return
+                }
+                if (position > 1) {
+                    val habitIndex = position - 2
+                    if (habitIndex < habitList.size) {
+                        selectedHabitId = habitList[habitIndex].id
+                    }
+                } else {
+                    selectedHabitId = null
+                }
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                selectedHabitId = null
+            }
+        }
+    }
+
+    private fun syncEndTimeWithDuration() {
+        val amount = binding.etGoalAmount.text.toString().toIntOrNull() ?: return
+        val unit = binding.spinnerGoalUnit.selectedItem?.toString()?.lowercase(Locale.getDefault())
+        val addMinutes = if (unit == "hours") amount * 60 else amount
+        val parts = selectedTime.split(":")
+        val sh = parts.getOrNull(0)?.toIntOrNull() ?: 8
+        val sm = parts.getOrNull(1)?.toIntOrNull() ?: 0
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.HOUR_OF_DAY, sh)
+        cal.set(Calendar.MINUTE, sm)
+        cal.add(Calendar.MINUTE, addMinutes)
+        val eh = cal.get(Calendar.HOUR_OF_DAY)
+        val em = cal.get(Calendar.MINUTE)
+        binding.tvEndTimeValue.text = String.format(Locale.US, "%02d:%02d", eh, em)
+    }
+
+    private fun syncDurationWithEndTime() {
+        val startParts = selectedTime.split(":")
+        val sh = startParts.getOrNull(0)?.toIntOrNull() ?: 8
+        val sm = startParts.getOrNull(1)?.toIntOrNull() ?: 0
+        val endParts = binding.tvEndTimeValue.text.toString().split(":")
+        val eh = endParts.getOrNull(0)?.toIntOrNull() ?: sh
+        val em = endParts.getOrNull(1)?.toIntOrNull() ?: sm
+        val start = sh * 60 + sm
+        val end = eh * 60 + em
+        var diff = end - start
+        if (diff < 0) diff += 24 * 60
+        val unit = binding.spinnerGoalUnit.selectedItem?.toString()?.lowercase(Locale.getDefault())
+        if (unit == "hours") {
+            val hours = diff / 60
+            binding.etGoalAmount.setText(hours.toString())
+        } else {
+            binding.etGoalAmount.setText(diff.toString())
+        }
+    }
+
     private fun createScheduleWithHabitId() {
         if (selectedHabitId == null) {
             Toast.makeText(requireContext(), "Error: Habit not found", Toast.LENGTH_SHORT).show()
@@ -331,11 +279,40 @@ class AddScheduleFragment : Fragment() {
         }
 
         val durationText = binding.etGoalAmount.text.toString()
-        val durationMinutes = if (durationText.isNotEmpty()) durationText.toIntOrNull() else null
-        val currentDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val unitSelected = binding.spinnerGoalUnit.selectedItem?.toString()?.lowercase(Locale.getDefault())
+        val durationMinutes: Int? = durationText.toIntOrNull()?.let { amount ->
+            when (unitSelected) {
+                "hours" -> amount * 60
+                "minutes" -> amount
+                else -> amount
+            }
+        }
 
-        val startTimeIso = "${currentDate}T${selectedTime}:00.000Z"
+        val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        dateFormatter.timeZone = TimeZone.getTimeZone("UTC")
+        val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
 
+        val today = Date()
+        val currentDate = dateFormatter.format(today)
+
+        val parts = selectedTime.split(":")
+        val sh = parts.getOrNull(0)?.toIntOrNull() ?: 8
+        val sm = parts.getOrNull(1)?.toIntOrNull() ?: 0
+
+        val cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        cal.time = today
+        cal.set(Calendar.HOUR_OF_DAY, sh)
+        cal.set(Calendar.MINUTE, sm)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+        val startTimeIso = isoFormatter.format(cal.time)
+
+        val endDateTimeIso: String? = durationMinutes?.let { mins ->
+            val endCal = cal.clone() as Calendar
+            endCal.add(Calendar.MINUTE, mins)
+            isoFormatter.format(endCal.time)
+        }
 
         when (selectedRepeatPattern) {
             "daily", "weekdays", "weekends" -> {
@@ -343,7 +320,7 @@ class AddScheduleFragment : Fragment() {
                     habitId = selectedHabitId!!,
                     startTime = startTimeIso,
                     repeatPattern = selectedRepeatPattern,
-                    endTime = null,
+                    endTime = endDateTimeIso,
                     durationMinutes = durationMinutes,
                     repeatDays = 30,
                     isCustom = true,
@@ -363,7 +340,7 @@ class AddScheduleFragment : Fragment() {
                     daysOfWeek = selectedCustomDays.sorted(),
                     numberOfWeeks = 4,
                     durationMinutes = durationMinutes,
-                    endTime = null,
+                    endTime = endDateTimeIso,
                     participantIds = null,
                     notes = null
                 )
@@ -374,7 +351,7 @@ class AddScheduleFragment : Fragment() {
                     habitId = selectedHabitId!!,
                     date = currentDate,
                     startTime = startTimeIso,
-                    endTime = null,
+                    endTime = endDateTimeIso,
                     durationMinutes = durationMinutes,
                     isCustom = true,
                     participantIds = null,
@@ -383,5 +360,50 @@ class AddScheduleFragment : Fragment() {
                 viewModel.createCustomSchedule(request)
             }
         }
+    }
+
+    private fun showCreateHabitDialog() {
+        if (categoryList.isEmpty()) {
+            viewModel.loadCategories()
+            Toast.makeText(requireContext(), "Loading categories...", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val dialogView = layoutInflater.inflate(R.layout.dialog_create_habit, null)
+        val dialog = android.app.AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .create()
+        val etHabitName = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etHabitName)
+        val etHabitDescription = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etHabitDescription)
+        val spinnerCategory = dialogView.findViewById<android.widget.Spinner>(R.id.spinnerCategory)
+        val etHabitGoal = dialogView.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etHabitGoal)
+        val btnCancel = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCancelHabit)
+        val btnCreate = dialogView.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnCreateHabit)
+
+        val categoryNames = categoryList.map { it.name }
+        val categoryAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categoryNames)
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerCategory.adapter = categoryAdapter
+
+        btnCancel.setOnClickListener { dialog.dismiss() }
+        btnCreate.setOnClickListener {
+            val name = etHabitName.text?.toString()?.trim().orEmpty()
+            if (name.isEmpty()) {
+                Toast.makeText(requireContext(), "Enter habit name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val description = etHabitDescription.text?.toString()?.trim().orEmpty()
+            val goalInput = etHabitGoal.text?.toString()
+            val goal = if (goalInput.isNullOrBlank()) "Complete $name" else goalInput.trim()
+            val pos = spinnerCategory.selectedItemPosition
+            if (pos < 0 || pos >= categoryList.size) {
+                Toast.makeText(requireContext(), "Select category", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val categoryId = categoryList[pos].id
+            viewModel.createHabit(name, if (description.isEmpty()) null else description, categoryId, goal)
+            dialog.dismiss()
+            viewModel.loadHabits()
+        }
+        dialog.show()
     }
 }

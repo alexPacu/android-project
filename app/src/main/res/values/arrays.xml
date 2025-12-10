@@ -3,10 +3,5 @@
     <string-array name="goal_units">
         <item>minutes</item>
         <item>hours</item>
-        <item>times</item>
-        <item>reps</item>
-        <item>pages</item>
-        <item>km</item>
     </string-array>
 </resources>
-

@@ -36,6 +36,23 @@ class EditScheduleFragment : Fragment() {
         setupStatusButtons()
         setupTimePickers()
 
+        binding.etDuration.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) { recomputeEndTimeFromDuration() }
+        })
+
+        val units = listOf("minutes", "hours")
+        val unitAdapter = android.widget.ArrayAdapter(requireContext(), com.example.progr3ss.R.layout.spinner_item_dark, units)
+        unitAdapter.setDropDownViewResource(com.example.progr3ss.R.layout.spinner_dropdown_item_dark)
+        binding.spinnerDurationUnit.adapter = unitAdapter
+        binding.spinnerDurationUnit.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                recomputeEndTimeFromDuration()
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
+
         binding.btnSave.setOnClickListener { saveChanges() }
         binding.btnCancel.setOnClickListener { findNavController().popBackStack() }
 
@@ -70,7 +87,7 @@ class EditScheduleFragment : Fragment() {
 
     private fun setupTimePickers() {
         binding.etStartTime.setOnClickListener { showTimePicker(binding.etStartTime) }
-        binding.etEndTime.setOnClickListener { showTimePicker(binding.etEndTime) }
+        // binding.etEndTime.setOnClickListener { showTimePicker(binding.etEndTime) }
     }
 
     private fun showTimePicker(target: android.widget.EditText) {
@@ -132,11 +149,31 @@ class EditScheduleFragment : Fragment() {
             .takeIf { it.isNotEmpty() }
     }
 
+    private fun recomputeEndTimeFromDuration() {
+        val start = binding.etStartTime.text.toString()
+        val parts = start.split(":")
+        if (parts.size < 2) return
+        val sh = parts[0].toIntOrNull() ?: return
+        val sm = parts[1].toIntOrNull() ?: return
+        val amount = binding.etDuration.text.toString().toIntOrNull() ?: return
+        val unit = binding.spinnerDurationUnit.selectedItem?.toString()?.lowercase(Locale.getDefault())
+        val addMinutes = if (unit == "hours") amount * 60 else amount
+        val cal = java.util.Calendar.getInstance()
+        cal.set(java.util.Calendar.HOUR_OF_DAY, sh)
+        cal.set(java.util.Calendar.MINUTE, sm)
+        cal.add(java.util.Calendar.MINUTE, addMinutes)
+        val eh = cal.get(java.util.Calendar.HOUR_OF_DAY)
+        val em = cal.get(java.util.Calendar.MINUTE)
+        binding.etEndTime.setText(String.format(Locale.getDefault(), "%02d:%02d", eh, em))
+    }
+
     private fun saveChanges() {
         val schedule = viewModel.selectedSchedule.value ?: return
         val startTimeInput = binding.etStartTime.text.toString()
         val endTimeInput = binding.etEndTime.text.toString()
-        val durationInput = binding.etDuration.text.toString().toIntOrNull()
+        val amount = binding.etDuration.text.toString().toIntOrNull()
+        val unit = binding.spinnerDurationUnit.selectedItem?.toString()?.lowercase(Locale.getDefault())
+        val durationMinutes = amount?.let { if (unit == "hours") it * 60 else it }
         val notesInput = binding.etNotes.text.toString().ifBlank { null }
         val participantsInput = parseParticipants(binding.etParticipants.text.toString())
         val status = selectedStatus
@@ -149,7 +186,7 @@ class EditScheduleFragment : Fragment() {
             id = schedule.id,
             startTime = startIso,
             endTime = endIso,
-            durationMinutes = durationInput,
+            durationMinutes = durationMinutes,
             status = status,
             date = schedule.date,
             isCustom = schedule.isCustom,
