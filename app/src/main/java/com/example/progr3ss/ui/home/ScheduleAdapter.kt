@@ -43,6 +43,7 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>
         private val tvDescription: TextView = itemView.findViewById(R.id.tvDescription)
         private val tvStatus: TextView = itemView.findViewById(R.id.tvStatus)
         private val ivStatus: ImageView = itemView.findViewById(R.id.ivStatus)
+        private val tvActiveDays: TextView = itemView.findViewById(R.id.tvActiveDays)
 
         fun bind(schedule: ScheduleResponseDto) {
 
@@ -80,6 +81,7 @@ class ScheduleAdapter : RecyclerView.Adapter<ScheduleAdapter.ScheduleViewHolder>
                 }
             }
         }
+
 
         private fun extractTime(timeString: String): String {
             if (timeString.matches(Regex("\\d{2}:\\d{2}"))) {

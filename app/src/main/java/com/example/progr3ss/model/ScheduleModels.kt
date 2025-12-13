@@ -135,12 +135,10 @@ data class CreateWeekdayRecurringScheduleRequest(
     val daysOfWeek: List<Int>, // 1=Monday ... 7=Sunday
     @SerializedName("numberOfWeeks")
     val numberOfWeeks: Int = 4,
+    @SerializedName("duration_minutes")
+    val durationMinutes: Int,
     @SerializedName("end_time")
     val endTime: String? = null,
-    @SerializedName("duration_minutes")
-    val durationMinutes: Int? = null,
-    @SerializedName("is_custom")
-    val isCustom: Boolean = true,
     @SerializedName("participantIds")
     val participantIds: List<Int>? = null,
     val notes: String? = null

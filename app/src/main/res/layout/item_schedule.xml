@@ -64,6 +64,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Active Days -->
+        <TextView
+            android:id="@+id/tvActiveDays"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:textColor="#B8B8D0"
+            tools:text="Active on Mon, Wed, Fri"
+            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <!-- Status Text -->
         <TextView
             android:id="@+id/tvStatus"
@@ -78,9 +91,8 @@
             android:paddingBottom="6dp"
             android:background="@android:drawable/dialog_holo_light_frame"
             tools:text="Planned"
-            app:layout_constraintTop_toBottomOf="@id/tvDescription"
+            app:layout_constraintTop_toBottomOf="@id/tvActiveDays"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
-

@@ -80,6 +80,15 @@ class AddScheduleFragment : Fragment() {
         viewModel.scheduleCreated.observe(viewLifecycleOwner) { success ->
             if (success) {
                 Toast.makeText(requireContext(), "Schedule created successfully!", Toast.LENGTH_SHORT).show()
+
+                parentFragmentManager.fragments
+                    .filterIsInstance<com.example.progr3ss.ui.profile.ProfileFragment>()
+                    .firstOrNull()
+                    ?.let { frag ->
+                        frag.viewLifecycleOwnerLiveData.observe(viewLifecycleOwner) { owner ->
+                        }
+                    }
+
                 findNavController().navigateUp()
             }
         }
@@ -316,16 +325,23 @@ class AddScheduleFragment : Fragment() {
 
         when (selectedRepeatPattern) {
             "daily", "weekdays", "weekends" -> {
+                val patternNote = when (selectedRepeatPattern) {
+                    "daily" -> "repeat:everyday"
+                    "weekdays" -> "repeat:weekdays"
+                    "weekends" -> "repeat:weekends"
+                    else -> "repeat:everyday"
+                }
+
                 val request = CreateRecurringScheduleRequest(
                     habitId = selectedHabitId!!,
                     startTime = startTimeIso,
-                    repeatPattern = selectedRepeatPattern,
                     endTime = endDateTimeIso,
                     durationMinutes = durationMinutes,
+                    repeatPattern = selectedRepeatPattern,
                     repeatDays = 30,
                     isCustom = true,
                     participantIds = null,
-                    notes = null
+                    notes = patternNote
                 )
                 viewModel.createRecurringSchedule(request)
             }
@@ -334,6 +350,14 @@ class AddScheduleFragment : Fragment() {
                     Toast.makeText(requireContext(), "Please select at least one day", Toast.LENGTH_SHORT).show()
                     return
                 }
+
+                if (durationMinutes == null || durationMinutes <= 0) {
+                    Toast.makeText(requireContext(), "Please set a valid duration for recurring schedules", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                val patternNote = "repeat:custom:${selectedCustomDays.sorted().joinToString(",")}"
+
                 val request = CreateWeekdayRecurringScheduleRequest(
                     habitId = selectedHabitId!!,
                     startTime = startTimeIso,
@@ -342,7 +366,7 @@ class AddScheduleFragment : Fragment() {
                     durationMinutes = durationMinutes,
                     endTime = endDateTimeIso,
                     participantIds = null,
-                    notes = null
+                    notes = patternNote
                 )
                 viewModel.createWeekdayRecurringSchedule(request)
             }
@@ -355,7 +379,7 @@ class AddScheduleFragment : Fragment() {
                     durationMinutes = durationMinutes,
                     isCustom = true,
                     participantIds = null,
-                    notes = null
+                    notes = "repeat:once"
                 )
                 viewModel.createCustomSchedule(request)
             }

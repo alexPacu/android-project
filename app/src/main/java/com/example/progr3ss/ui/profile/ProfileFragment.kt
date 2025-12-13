@@ -60,10 +60,32 @@ class ProfileFragment : Fragment() {
             if (profile == null) {
                 binding.tvUsername.text = ""
                 binding.tvEmail.text = ""
+                binding.tvBio.visibility = View.GONE
             } else {
                 binding.tvUsername.text = profile.username
                 binding.tvEmail.text = profile.email
+
+                val bio = profile.description
+                if (!bio.isNullOrBlank()) {
+                    binding.tvBio.text = bio
+                    binding.tvBio.visibility = View.VISIBLE
+                } else {
+                    binding.tvBio.visibility = View.GONE
+                }
             }
+        }
+
+        viewModel.profileImageBitmap.observe(viewLifecycleOwner) { bmp ->
+            if (bmp != null) {
+                binding.ivProfilePicture.setImageBitmap(bmp)
+            } else {
+                binding.ivProfilePicture.setImageResource(android.R.drawable.ic_menu_myplaces)
+            }
+        }
+
+        viewModel.habitWeeklyProgress.observe(viewLifecycleOwner) { progressMap ->
+            val habits = viewModel.habits.value.orEmpty()
+            habitAdapter.submitList(habits, progressMap ?: emptyMap())
         }
 
         viewModel.habits.observe(viewLifecycleOwner) { habits ->
@@ -73,7 +95,9 @@ class ProfileFragment : Fragment() {
             } else {
                 binding.tvNoHabits.visibility = View.GONE
                 binding.rvHabits.visibility = View.VISIBLE
-                habitAdapter.submitList(habits)
+
+                val progressMap = viewModel.habitWeeklyProgress.value ?: emptyMap()
+                habitAdapter.submitList(habits, progressMap)
             }
         }
 

@@ -12,10 +12,12 @@ import com.example.progr3ss.model.HabitResponseDto
 class HabitProgressAdapter : RecyclerView.Adapter<HabitProgressAdapter.HabitViewHolder>() {
 
     private val items = mutableListOf<HabitResponseDto>()
+    private var weeklyProgressMap: Map<Int, Pair<Int, Int>> = emptyMap()
 
-    fun submitList(newItems: List<HabitResponseDto>) {
+    fun submitList(newItems: List<HabitResponseDto>, weeklyProgress: Map<Int, Pair<Int, Int>>) {
         items.clear()
         items.addAll(newItems)
+        weeklyProgressMap = weeklyProgress
         notifyDataSetChanged()
     }
 
@@ -25,7 +27,9 @@ class HabitProgressAdapter : RecyclerView.Adapter<HabitProgressAdapter.HabitView
     }
 
     override fun onBindViewHolder(holder: HabitViewHolder, position: Int) {
-        holder.bind(items[position])
+        val item = items[position]
+        val weeklyProgress = weeklyProgressMap[item.id]
+        holder.bind(item, weeklyProgress)
     }
 
     override fun getItemCount(): Int = items.size
@@ -35,10 +39,13 @@ class HabitProgressAdapter : RecyclerView.Adapter<HabitProgressAdapter.HabitView
         private val tvPercent: TextView = itemView.findViewById(R.id.tvHabitPercent)
         private val progressBar: ProgressBar = itemView.findViewById(R.id.progressHabit)
 
-        fun bind(item: HabitResponseDto) {
+        fun bind(item: HabitResponseDto, weeklyProgress: Pair<Int, Int>?) {
             tvName.text = item.name
-            val progress = 0
-            tvPercent.text = "${progress}%"
+
+            val (completedDays, activeDays) = weeklyProgress ?: Pair(0, 7)
+            val progress = if (activeDays > 0) (completedDays * 100 / activeDays) else 0
+
+            tvPercent.text = "$progress%"
             progressBar.progress = progress
         }
     }

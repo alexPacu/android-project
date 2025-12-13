@@ -42,6 +42,15 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
     private val _profileImageBitmap = MutableLiveData<Bitmap?>()
     val profileImageBitmap: LiveData<Bitmap?> = _profileImageBitmap
 
+    private val _profileUpdateSuccess = MutableLiveData<Boolean?>()
+    val profileUpdateSuccess: LiveData<Boolean?> = _profileUpdateSuccess
+
+    private val _completedHabitsToday = MutableLiveData<Set<Int>>()
+    val completedHabitsToday: LiveData<Set<Int>> = _completedHabitsToday
+
+    private val _habitWeeklyProgress = MutableLiveData<Map<Int, Pair<Int, Int>>>()
+    val habitWeeklyProgress: LiveData<Map<Int, Pair<Int, Int>>> = _habitWeeklyProgress
+
     private fun refreshProfileImageIfAvailable(profile: ProfileResponseDto?) {
         if (profile == null) {
             _profileImageBitmap.postValue(null)
@@ -112,12 +121,101 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
             try {
                 val response = scheduleRepository.getHabitsByUser(userId)
                 if (response.isSuccessful) {
-                    _habits.value = response.body() ?: emptyList()
+                    val habits = response.body() ?: emptyList()
+                    _habits.value = habits
+
+                    loadCompletedHabitsForToday(habits)
                 } else {
                     _error.value = "Failed to load habits: ${response.code()}"
                 }
             } catch (e: Exception) {
                 _error.value = "Error loading habits: ${e.message}"
+            }
+        }
+    }
+
+    private fun loadCompletedHabitsForToday(habits: List<HabitResponseDto>) {
+        viewModelScope.launch {
+            try {
+                val calendar = java.util.Calendar.getInstance()
+                val today = calendar.clone() as java.util.Calendar
+                calendar.firstDayOfWeek = java.util.Calendar.MONDAY
+                calendar.set(java.util.Calendar.DAY_OF_WEEK, java.util.Calendar.MONDAY)
+
+                val weekSchedules = mutableListOf<com.example.progr3ss.model.ScheduleResponseDto>()
+                val dateFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault())
+
+                while (calendar.before(today) || calendar.get(java.util.Calendar.DAY_OF_YEAR) == today.get(java.util.Calendar.DAY_OF_YEAR)) {
+                    val dayDate = dateFormat.format(calendar.time)
+                    val schedulesRes = scheduleRepository.getSchedulesByDay(dayDate)
+                    if (schedulesRes.isSuccessful) {
+                        weekSchedules.addAll(schedulesRes.body() ?: emptyList())
+                    }
+                    calendar.add(java.util.Calendar.DAY_OF_WEEK, 1)
+
+                    if (calendar.get(java.util.Calendar.DAY_OF_WEEK) == java.util.Calendar.MONDAY) {
+                        break
+                    }
+                }
+
+                val habitCompletionMap = mutableMapOf<Int, Pair<Int, Int>>()
+
+                habits.forEach { habit ->
+                    val habitSchedules = weekSchedules.filter { it.habit.id == habit.id }
+
+                    if (habitSchedules.isEmpty()) {
+                        return@forEach
+                    }
+
+                    val firstSchedule = habitSchedules.firstOrNull()
+                    val notes = firstSchedule?.notes ?: ""
+
+                    if (notes.startsWith("repeat:once")) {
+                        val isCompleted = habitSchedules.any { it.status == "Completed" }
+                        val completedCount = if (isCompleted) 1 else 0
+                        habitCompletionMap[habit.id] = Pair(completedCount, 1)
+                        return@forEach
+                    }
+
+                    val expectedDaysPerWeek = when {
+                        notes.startsWith("repeat:everyday") -> 7
+                        notes.startsWith("repeat:weekdays") -> 5
+                        notes.startsWith("repeat:weekends") -> 2
+                        notes.startsWith("repeat:custom") -> {
+                            val parts = notes.split(":")
+                            if (parts.size >= 3) {
+                                parts[2].split(",").size
+                            } else {
+                                habitSchedules.map { it.date.substring(0, 10) }.toSet().size
+                            }
+                        }
+                        else -> {
+                            habitSchedules.map { it.date.substring(0, 10) }.toSet().size
+                        }
+                    }
+
+                    val completedDaysSet = habitSchedules
+                        .filter { it.status == "Completed" }
+                        .map { it.date.substring(0, 10) }
+                        .toSet()
+
+                    val completedDays = completedDaysSet.size
+
+                    if (expectedDaysPerWeek > 0) {
+                        habitCompletionMap[habit.id] = Pair(completedDays, expectedDaysPerWeek)
+                    }
+                }
+
+                _habitWeeklyProgress.value = habitCompletionMap
+
+                val todayStr = dateFormat.format(java.util.Date())
+                val todaySchedules = weekSchedules.filter { it.date.substring(0, 10) == todayStr }
+                val completedHabitIds = todaySchedules
+                    .filter { it.status == "Completed" }
+                    .map { it.habit.id }
+                    .toSet()
+                _completedHabitsToday.value = completedHabitIds
+            } catch (_: Exception) {
             }
         }
     }
@@ -147,11 +245,14 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                     val updated = res.body()
                     _profile.value = updated
                     refreshProfileImageIfAvailable(updated)
+                    _profileUpdateSuccess.value = true
                 } else {
                     _error.value = "Failed to update profile: ${res.code()}"
+                    _profileUpdateSuccess.value = false
                 }
             } catch (e: Exception) {
                 _error.value = "Error updating profile: ${e.message}"
+                _profileUpdateSuccess.value = false
             } finally {
                 _loading.value = false
             }
@@ -196,5 +297,15 @@ class ProfileViewModel(application: Application) : AndroidViewModel(application)
                 _loading.value = false
             }
         }
+    }
+
+    fun clearProfileUpdateFlag() {
+        _profileUpdateSuccess.value = null
+    }
+
+    fun refreshCompletedHabitsToday() {
+        val currentHabits = _habits.value ?: emptyList()
+        if (currentHabits.isEmpty()) return
+        loadCompletedHabitsForToday(currentHabits)
     }
 }

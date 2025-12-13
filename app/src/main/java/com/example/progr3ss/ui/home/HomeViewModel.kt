@@ -45,8 +45,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 val response = repository.getSchedulesByDay(queryDate)
 
                 if (response.isSuccessful && response.body() != null) {
-                    val schedules = response.body()!!
-                    val sortedSchedules = schedules.sortedBy { it.startTime }
+                    val allSchedules = response.body()!!
+
+                    val calendar = Calendar.getInstance()
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                    calendar.time = dateFormat.parse(queryDate) ?: Date()
+                    val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+                    val isWeekend = dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY
+
+                    val filteredSchedules = allSchedules.filter { schedule ->
+                        val notes = schedule.notes ?: ""
+                        when {
+                            notes.startsWith("repeat:weekdays") -> !isWeekend
+                            notes.startsWith("repeat:weekends") -> isWeekend
+                            else -> true
+                        }
+                    }
+
+                    val sortedSchedules = filteredSchedules.sortedBy { it.startTime }
                     _schedules.value = sortedSchedules
                 } else {
                     _errorMessage.value = "Failed to load schedules: ${response.code()}"

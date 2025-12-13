@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -42,9 +43,38 @@ class ScheduleDetailsFragment : Fragment() {
         val scheduleId = arguments?.getInt("scheduleId") ?: -1
 
         binding.btnEditSchedule.setOnClickListener {
-            val action = com.example.progr3ss.R.id.action_scheduleDetailsFragment_to_editScheduleFragment
+            val action = R.id.action_scheduleDetailsFragment_to_editScheduleFragment
             val args = Bundle().apply { putInt("scheduleId", scheduleId) }
             findNavController().navigate(action, args)
+        }
+
+        binding.btnAddProgress.setOnClickListener {
+            if (scheduleId != -1) {
+                val schedule = viewModel.selectedSchedule.value
+                val date = schedule?.date ?: ""
+                if (date.isNotBlank()) {
+                    val isCurrentlyCompleted = schedule?.status == "Completed"
+
+                    viewModel.createProgress(
+                        scheduleId = scheduleId,
+                        date = date,
+                        notes = null,
+                        isCompleted = !isCurrentlyCompleted
+                    )
+
+                    val newStatus = if (isCurrentlyCompleted) "Planned" else "Completed"
+                    viewModel.updateSchedule(
+                        id = scheduleId,
+                        status = newStatus
+                    )
+
+                    viewModel.loadScheduleById(scheduleId)
+                } else {
+                    Toast.makeText(requireContext(), "Schedule date not available", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                Toast.makeText(requireContext(), "Schedule not loaded", Toast.LENGTH_SHORT).show()
+            }
         }
 
         binding.btnEditNotes.setOnClickListener {
@@ -74,6 +104,8 @@ class ScheduleDetailsFragment : Fragment() {
                 findNavController().navigate(R.id.homeFragment, null, navOptions)
             }
         }
+
+
     }
 
     private fun showOptionsMenu(anchor: View) {
@@ -134,11 +166,21 @@ class ScheduleDetailsFragment : Fragment() {
 
                 activityAdapter.submitList(progressItems.sortedByDescending { it.date })
 
-                val total = progressItems.size
-                val completed = progressItems.count { it.isCompleted }
-                val percent = if (total > 0) (completed * 100 / total) else 0
+                val percent = if (schedule.status == "Completed") {
+                    100
+                } else {
+                    val total = progressItems.size
+                    val completed = progressItems.count { it.isCompleted }
+                    if (total > 0) (completed * 100 / total) else 0
+                }
                 binding.pbCompletion.progress = percent
                 binding.tvCompletionPercent.text = "$percent%"
+
+                binding.btnAddProgress.text = if (schedule.status == "Completed") {
+                    "Mark as uncompleted"
+                } else {
+                    "Mark as completed"
+                }
             }
         }
 
@@ -151,7 +193,6 @@ class ScheduleDetailsFragment : Fragment() {
             binding.tvError.text = error
         }
 
-        // Optimistic notes update: listen for fragment result from dialog and update UI immediately
         parentFragmentManager.setFragmentResultListener("notes_updated", viewLifecycleOwner) { _, bundle ->
             val newNotes = bundle.getString("notes")
             if (newNotes != null) {
